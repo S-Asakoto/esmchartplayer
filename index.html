@@ -1,0 +1,374 @@
+<html>
+	<head>
+		<link rel="stylesheet" href="css/main.css">
+		<meta charset="utf-8">
+		<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
+	</head>
+	<body>
+		<template id="judgment_mark">
+			<svg class="mark" viewBox="0 0 100 100">
+				<defs>
+					<mask id="note">
+						<circle cx="50" cy="50" r="47" fill="#888" />
+						<circle cx="50" cy="50" r="30" fill="white" />
+					</mask>
+				</defs>
+				<circle cx="50" cy="50" r="47" fill="#fff" mask="url(#note)" />
+				<circle cx="50" cy="50" r="47" stroke="#fff" stroke-width="5" fill="#fff0"/>
+			</svg>
+		</template>
+		<template id="effect">
+			<svg class="mark effect" viewBox="0 0 100 100">
+				<defs>
+					<filter id="f1">
+						<feGaussianBlur stdDeviation="5" />
+					</filter>
+				</defs>
+				<circle cx="50" cy="50" r="30" fill="#fff" filter="url(#f1)" />
+			</svg>
+		</template>
+		<template id="notes">
+			<svg class="note" id="note_skill" viewBox="0 0 200 200">
+				<circle cx="100" cy="100" r="50" fill="#39c" />
+				<circle cx="100" cy="100" r="40" stroke="#fff" stroke-width="8" fill="#fff0" />
+				<path d="M100,80 L106,92 L119,94 L110,103 L112,116 L100,110 L88,116 L90,103 L81,94 L94,92 Z" fill="#fff" />
+			</svg>
+			<div class="note" id="note_ens">
+				<div class="ensemble-note"></div>
+			</div>
+			<svg class="note" id="note_tap_1" viewBox="0 0 200 200">
+				<circle cx="100" cy="100" r="50" fill="#03c" />
+				<circle cx="100" cy="100" r="40" stroke="#fff" stroke-width="8" fill="#fff0" />
+				<circle cx="100" cy="100" r="10" fill="#fff" />
+			</svg>
+			<svg class="note" id="note_hold_1" viewBox="0 0 200 200">
+				<circle cx="100" cy="100" r="50" fill="#f90" />
+				<circle cx="100" cy="100" r="40" stroke="#fff" stroke-width="8" fill="#fff0" />
+				<circle cx="100" cy="100" r="10" fill="#fff" />
+			</svg>
+			<svg class="note" id="note_knot_1" viewBox="0 0 200 200">
+				<circle cx="100" cy="100" r="40" stroke="#fff" stroke-width="8" fill="#fff9" />
+				<path d="M60,90 L80,100 L60,110 Z" fill="#fff" />
+				<path d="M140,90 L120,100 L140,110 Z" fill="#fff" />
+			</svg>
+			<svg class="note" id="note_flick_left_1" viewBox="0 0 200 200">
+				<path d="M68,62 A50,50,0,1,1,68,138 L25,102 A3,3,0,0,1,25,98 Z" fill="#f03" />
+				<path d="M74,69 A40,40,0,1,1,74,131 L40,102 A3,3,0,0,1,40,98 Z" stroke="#fff" stroke-width="8" fill="#fff0" />
+				<path d="M54,100 L84,75 L84,90 L119,90 A10,10,0,0,1,119,110 L84,110 L84,125 Z" fill="#fff" />
+			</svg>		
+			<svg class="note" id="note_flick_right_1" viewBox="0 0 200 200">
+				<path d="M132,138 A50,50,0,1,1,132,62 L175,98 A3,3,0,0,1,175,102 Z" fill="#f60" />
+				<path d="M126,131 A40,40,0,1,1,126,69 L160,98 A3,3,0,0,1,160,102 Z" stroke="#fff" stroke-width="8" fill="#fff0" />
+				<path d="M146,100 L116,125 L116,110 L81,110 A10,10,0,0,1,81,90 L116,90 L116,75 Z" fill="#fff" />
+			</svg>
+		</template>
+		<div id="yt" class="external-source"></div>
+		<div id="brightness_mask"></div>
+		<div id="board" draggable="false">
+			<div class="ui">
+				<div id="fps"></div>
+				<svg id="line" viewBox="0 0 1400 406">
+					<path d="M1393,3 A800,800,0,0,1,7,3" stroke="#fff" stroke-width="5" fill="#fff0" />
+				</svg>
+				<div id="judgment_line">
+				</div>
+				<svg id="simul_guide" viewBox="0 0 2500 2500">
+				</svg>
+				<svg id="hold_segments" viewBox="0 0 2500 2500">
+					<defs>
+						<mask id="main_region">
+							<circle cx="1250" cy="1250" r="800" fill="white" />
+							<circle cx="1250" cy="1250" r="95" fill="black" />
+						</mask>
+					</defs>
+					<g>
+					
+					
+					</g>
+				</svg>
+				<div id="note_container">
+				</div>
+				<div id="voltage">
+					<svg viewBox="0 0 556 60">
+						<defs>
+							<linearGradient id="g1" x1="0%" y1="10%" x2="100%" y2="0%">
+								<stop offset="0%" style="stop-color: #00c;" />
+								<stop offset="20%" style="stop-color: #fff;" />
+							</linearGradient>
+							<linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="0%">
+								<stop offset="0%" style="stop-color: #ff0;" />
+								<stop offset="50%" style="stop-color: #ff0;" />
+								<stop offset="50%" style="stop-color: #f90;" />
+							</linearGradient>
+							<mask id="groove">
+								<rect width="556" height="60" fill="white" />
+								<path d="M307,22 L313,10 L541,10 A5,5,0,0,1,546,15 L546,34 A16,16,0,0,1,530,50 L73,50 A5,5,0,0,1,68,45 L68,38 A16,16,0,0,1,84,22 Z" fill="black" />
+							</mask>
+							<mask id="gauge">
+								<rect x="67" y="0" width="480" height="60" fill="white" />
+							</mask>
+						</defs>
+						<rect x="67" y="0" width="480" height="60" fill="url(#g2)" mask="url(#gauge)" />
+						<rect width="556" height="60" fill="url(#g1)" mask="url(#groove)" />
+						<path d="M307,40 L316,60 L298,60 Z" fill="#006" />
+					</svg>
+					<div id="vol_word" class="outline" data-text="VOLTAGE"></div>
+					<div id="clear_word" class="outline" data-text="CLEAR"></div>
+					<div id="voltage_sp" class="support">♪ SUPPORT</div>
+				</div>
+				<div id="ens_marker" class="ensemble-time">♪
+					<svg id="ens_gauge" viewBox = "0 0 158 57">
+						<mask id="gauge3">
+							<path d="M10,1 A80,80,0,0,0,148,1 L157,15 A95,95,0,0,1,1,15 Z" fill="white" />
+						</mask>
+						<rect x="1" y="1" width="156" height="55" fill="#000" mask="url(#gauge3)" />
+						<rect id="ens_fill" x="1" y="1" width="140" height="55" fill="#ff6" mask="url(#gauge3)" />
+						<path d="M10,1 A80,80,0,0,0,148,1 L157,15 A95,95,0,0,1,1,15 Z" stroke="#006" stroke-width="2" fill="#0000" />
+					</svg>
+					<div id="ensemble_sp" class="support">♪ SUPPORT</div>
+				</div>
+				<div id="score">
+					<svg viewBox="0 0 993 60">
+						<defs>
+							<linearGradient id="g3" x1="0%" y1="0%" x2="100%" y2="0%">
+								<stop offset="0%" style="stop-color: #ff0;" />
+								<stop offset="50%" style="stop-color: #fcc;" />
+							</linearGradient>
+							<linearGradient id="g4" x1="0%" y1="0%" x2="100%" y2="0%">
+								<stop offset="0%" style="stop-color: #cf0;" />
+								<stop offset="10%" style="stop-color: #09f;" />
+								<stop offset="33%" style="stop-color: #fc0;" />
+								<stop offset="60%" style="stop-color: #f99;" />
+								<stop offset="100%" style="stop-color: #ff0;" />
+							</linearGradient>
+							<mask id="groove2">
+								<rect width="993" height="60" fill="white" />
+								<path d="M978,10 A5,5,0,0,1,983,15 L983,34 A16,16,0,0,1,967,50 L15,50 A5,5,0,0,1,10,45 L10,26 A16,16,0,0,1,26,10 Z" fill="black" />
+							</mask>
+							<mask id="gauge2">
+								<rect x="9" y="0" width="975" height="60" fill="white" />
+							</mask>
+						</defs>
+						<rect id="gauge_fill" x="9" y="0" width="975" height="60" fill="url(#g3)" mask="url(#gauge2)" />
+						<path id="grad_c" class="grads" d="M109,10 l0,40 Z" stroke-width="3" stroke="#fff" fill="#fff0" />
+						<path id="grad_b" class="grads" d="M341,10 l0,40 Z" stroke-width="3" stroke="#fff" fill="#fff0" />
+						<path id="grad_a" class="grads" d="M606,10 l0,40 Z" stroke-width="3" stroke="#fff" fill="#fff0" />
+						<rect width="993" height="60" fill="#fff" mask="url(#groove2)" />
+					</svg>
+					<div class="gauge-letters judge-letters gauge-c judge-c" data-letter="C"></div>
+					<div class="gauge-letters judge-letters gauge-b judge-b" data-letter="B"></div>
+					<div class="gauge-letters judge-letters gauge-a judge-a" data-letter="A"></div>
+					<div class="gauge-letters judge-letters gauge-s judge-s" data-letter="S"></div>
+					<div class="gauge-letters judge-letters gauge-s2 judge-s" data-letter="S"></div>
+					<div class="gauge-letters judge-letters gauge-sp judge-sp" data-letter="S+"></div>
+					<div id="score_word" class="outline" data-text="SCORE">SCORE</div>
+					<div id="score_num" class="number-outline">
+						<div class="base outline">00114514</div>
+						<div class="show"><span class="leading_zeros">00</span>114514</div>
+					</div>
+					<div id="score_up">SCORE UP</div>
+				</div>
+				<button id="menu_btn">II</button>
+			</div>
+			<div class="ui">
+				<div id="combo" class="top-center">
+					<div id="combo_num">25</div>
+					<div id="combo_word">COMBO</div>
+				</div>
+				<div id="judgment" class="center perfect" data-judge="PERFECT"></div>
+			</div>
+		</div>
+		<div id="menu">
+			<div class="container">
+				<div class="scroll">
+					<div class="header" data-translate="VIDEO_SETTINGS">影片設定</div>
+					<div class="subtitle" data-translate="SOURCE">來源</div>
+					<div class="row-group">
+						<form id="setting_yt" class="row">
+							https://youtube.com/watch?v=<input type="text" id="yt_videoid" name="yt_videoid" maxlength="11" pattern="[0-9A-Za-z_-]{11}" required data-storable>
+							<button data-translate="LOAD">載入</button>
+						</form>
+					</div>
+					<div class="subtitle" data-translate="BRIGHTNESS">亮度</div>
+					<div class="row-group">
+						<div class="row">
+							-100% <input type="range" min="-100" max="100" step="10" value="100" class="settings" id="brightness" data-storable> 100% <label class="range-value" data-value="brightness" data-format="_%"></label>
+						</div>
+					</div>
+					<div class="subtitle" data-translate="VOLUME">音量</div>
+					<div class="row-group">
+						<div class="row">
+							0% <input type="range" min="0" max="100" step="1" value="100" class="settings" id="volume" data-storable> 100% <label class="range-value" data-value="volume" data-format="_%"></label>
+						</div>
+					</div>
+					<div class="subtitle" data-translate="FULLSCREEN">全螢幕模式</div>
+					<div class="row-group">
+						<div class="row">
+							<button id="fs" data-translate="DISABLED">停用</button>
+						</div>
+					</div>
+					<div class="header" data-translate="PLAYBACK_SETTINGS">譜面播放設定</div>
+					<div class="subtitle" data-translate="HI_SPEED">譜面速度</div>
+					<div class="row-group">
+						<div class="row">
+							1.0 <input type="range" min="1" max="20" step="0.1" value="7" class="settings" id="hi_speed" data-storable> 20.0 <label class="range-value" data-value="hi_speed" data-format="_" data-fixed="1"></label>
+						</div>
+					</div>
+					<div class="subtitle" data-translate="OFFSET">譜面延遲</div>
+					<div class="row-group">
+						<div class="row">
+							-0.300s <input type="range" min="-0.3" max="0.3" step="0.01" value="0" class="settings" id="offset" data-storable> 0.300s <label class="range-value" data-value="offset" data-format="_s" data-fixed="3"></label>
+						</div>
+					</div>
+					<div class="subtitle" data-translate="NOTE_SIZE">音符大小</div>
+					<div class="row-group">
+						<div class="row">
+							50% <input type="range" min="50" max="150" step="10" value="100" class="settings" id="note_size" data-storable> 150% <label class="range-value" data-value="note_size" data-format="_%"></label>
+						</div>
+					</div>
+					<div class="subtitle" data-translate="COMBO_POSITION">連擊顯示位置</div>
+					<div class="row-group">
+						<div class="row">
+							<select id="combo_pos" data-storable>
+								<option value="bottom-center" data-translate="BOTTOM_CENTER">正下方</option>
+								<option value="top-center" data-translate="TOP_CENTER" selected>正上方</option>
+								<option value="top-right" data-translate="TOP_RIGHT">右上角</option>
+								<option value="none" data-translate="HIDDEN">隱藏</option>
+							</select>
+						</div>
+					</div>
+					<div class="subtitle" data-translate="JUDGE_POSITION">判定顯示位置</div>
+					<div class="row-group">
+						<div class="row">
+							<select id="judge_pos" data-storable>
+								<option value="bottom" data-translate="BOTTOM">下方</option>
+								<option value="center" data-translate="CENTER" selected>正中</option>
+								<option value="top" data-translate="TOP">上方</option>
+								<option value="none" data-translate="HIDDEN">隱藏</option>
+							</select>
+						</div>
+					</div>
+					<div class="subtitle" data-translate="PLAY_MODE">遊玩模式</div>
+					<div class="row-group">
+						<div class="row">
+							<button id="playmode" data-translate="DISABLED">停用</button>
+						</div>
+					</div>
+					<div class="header" data-translate="UNIT_SETTINGS">隊伍設定</div>
+					<div class="subtitle" data-translate="TOTAL_STRENGTH">綜合值</div>
+					<div class="row-group">
+						<div class="row">
+							10,000 <input type="range" min="10000" max="1200000" step="10000" value="720000" class="settings" id="total_str" data-storable> 1,200,000 <label class="range-value" data-value="total_str" data-format="_" data-separator=","></label>
+						</div>
+					</div>
+					<div class="subtitle" data-translate="LIVE_SKILLS">演出技能</div>
+					<div class="row-group">
+						<div class="row">
+							<span data-translate="NTH_POSITION" class="label-1" data-replaces="[1]"></span>
+							<select id="lsk1_length" data-storable>
+								<option value="5" data-translate="IN_SECONDS" data-replaces="[5]"></option>
+								<option value="8" data-translate="IN_SECONDS" data-replaces="[8]"></option>
+								<option value="12" data-translate="IN_SECONDS" data-replaces="[12]"></option>
+							</select>
+							+1% <input type="range" min="1" max="80" step="1" value="40" class="settings" id="lsk1_effect" data-storable> +80% <label class="range-value" data-value="lsk1_effect" data-format="+_%"></label>
+						</div>
+						<div class="row">
+							<span data-translate="NTH_POSITION" class="label-1" data-replaces="[2]"></span>
+							<select id="lsk3_length" data-storable>
+								<option value="5" data-translate="IN_SECONDS" data-replaces="[5]"></option>
+								<option value="8" data-translate="IN_SECONDS" data-replaces="[8]"></option>
+								<option value="12" data-translate="IN_SECONDS" data-replaces="[12]"></option>
+							</select>
+							+1% <input type="range" min="1" max="80" step="1" value="40" class="settings" id="lsk3_effect" data-storable> +80% <label class="range-value" data-value="lsk3_effect" data-format="+_%"></label>
+						</div>
+						<div class="row">
+							<span data-translate="CENTER_POSITION" class="label-1"></span>
+							<select id="lsk4_length" data-storable>
+								<option value="5" data-translate="IN_SECONDS" data-replaces="[5]"></option>
+								<option value="8" data-translate="IN_SECONDS" data-replaces="[8]"></option>
+								<option value="12" data-translate="IN_SECONDS" data-replaces="[12]"></option>
+							</select>
+							+1% <input type="range" min="1" max="80" step="1" value="40" class="settings" id="lsk4_effect" data-storable> +80% <label class="range-value" data-value="lsk4_effect" data-format="+_%"></label>
+						</div>
+						<div class="row">
+							<span data-translate="NTH_POSITION" class="label-1" data-replaces="[4]"></span>
+							<select id="lsk2_length" data-storable>
+								<option value="5" data-translate="IN_SECONDS" data-replaces="[5]"></option>
+								<option value="8" data-translate="IN_SECONDS" data-replaces="[8]"></option>
+								<option value="12" data-translate="IN_SECONDS" data-replaces="[12]"></option>
+							</select>
+							+1% <input type="range" min="1" max="80" step="1" value="40" class="settings" id="lsk2_effect" data-storable> +80% <label class="range-value" data-value="lsk2_effect" data-format="+_%"></label>
+						</div>
+						<div class="row">
+							<span data-translate="NTH_POSITION" class="label-1" data-replaces="[5]"></span>
+							<select id="lsk0_length" data-storable>
+								<option value="5" data-translate="IN_SECONDS" data-replaces="[5]"></option>
+								<option value="8" data-translate="IN_SECONDS" data-replaces="[8]"></option>
+								<option value="12" data-translate="IN_SECONDS" data-replaces="[12]"></option>
+							</select>
+							+1% <input type="range" min="1" max="80" step="1" value="40" class="settings" id="lsk0_effect" data-storable> +80% <label class="range-value" data-value="lsk0_effect" data-format="+_%"></label>
+						</div>
+					</div>
+					<div class="subtitle" data-translate="SUPPORT_SKILLS">支援技能</div>
+					<div class="row-group">
+						<div class="row">
+							<span data-translate="NTH_POSITION" class="label-1" data-replaces="[1]"></span>
+							<select id="ssk0" data-storable>
+								<option value="V1">VOLTAGE Lv.1</option>
+								<option value="V2">VOLTAGE Lv.2</option>
+								<option value="V3">VOLTAGE Lv.3</option>
+								<option value="E1">ENSEMBLE Lv.1</option>
+								<option value="E2">ENSEMBLE Lv.2</option>
+								<option value="E3">ENSEMBLE Lv.3</option>
+							</select>
+						</div>
+						<div class="row">
+							<span data-translate="NTH_POSITION" class="label-1" data-replaces="[2]"></span>
+							<select id="ssk1" data-storable>
+								<option value="V1">VOLTAGE Lv.1</option>
+								<option value="V2">VOLTAGE Lv.2</option>
+								<option value="V3">VOLTAGE Lv.3</option>
+								<option value="E1">ENSEMBLE Lv.1</option>
+								<option value="E2">ENSEMBLE Lv.2</option>
+								<option value="E3">ENSEMBLE Lv.3</option>
+							</select>
+						</div>
+					</div>
+					<div class="header" data-translate="LANGUAGE">語言</div>
+					<div class="row-group">
+						<div class="row">
+							<select id="lang" data-storable>
+								<option value="zh-Hant">繁體中文</option>
+								<option value="zh-Hans">简体中文</option>
+								<option value="en">English</option>
+								<option value="ja">日本語</option>
+							</select>
+						</div>
+					</div>
+					<div class="header" data-translate="CHART_SETTINGS">譜面設定</div>
+					<div class="subtitle" data-translate="CHART_DIFFICULTY">譜面難度</div>
+					<div class="row-group">
+						<div class="row">
+							<select id="chart_diff" data-storable>
+								<option value="0">Easy</option>
+								<option value="1">Normal</option>
+								<option value="2">Hard</option>
+								<option value="3" selected>Expert</option>
+							</select>
+							Lv. 1 <input type="range" min="1" max="30" step="1" value="24" class="settings" id="chart_lvl" data-storable> Lv. 30 <label class="range-value" data-value="chart_lvl" data-format="Lv. _"></label>
+						</div>
+					</div>
+					<div class="subtitle" data-translate="CHART_CONTENT">譜面內容</div>
+					<textarea id="chart" rows="10" data-storable></textarea>
+					<div id="chart_show" class="code-area" tabindex="0"></div>
+				</div>
+			</div>
+			<button id="close_menu" data-translate="CLOSE_N_PLAY">關閉並播放</button>
+		</div>
+	</body>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="js/global.js"></script>
+	<script src="js/VideoSource.js"></script>
+	<script src="https://www.youtube.com/iframe_api"></script>
+	<script src="js/esm.js" defer></script>
+</html>
