@@ -4,7 +4,7 @@
 
 + YouTube videos as MV source through IFrame API. You may use any video as long as the video is embeddable
 + Easy-to-write chart format
-+ Chart replay
++ Multilingual - 4 languages
 
 ### Plan
 
@@ -23,7 +23,7 @@
 
 + 經IFrame API使用YouTube影片作為MV來源。只要是允許嵌入的影片皆可使用
 + 容易寫的譜面格式
-+ 譜面重播
++ 多語言 - 4種語言
 
 ### 計劃
 
@@ -41,8 +41,8 @@
 ### 功能
 
 + 经IFrame API使用YouTube视频作为MV來源。只要是允许嵌入的视频皆可使用
-+ 容易寫的谱面格式
-+ 谱面重播
++ 容易写的谱面格式
++ 多语言 - 4种语言
 
 ### 计划
 
@@ -60,7 +60,7 @@
 ### フィーチャー
 + IFrame API経由でYouTube動画をMVソースに。埋め込み可能であればどんな動画でも使えます
 + 書きやすい譜面フォーマット
-+ 譜面リプレイ
++ マルチリンガル - 4つの言語
 
 ### 予定
 + SVGからオフスクリーンキャンバス(WebGL)に移行
