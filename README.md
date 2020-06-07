@@ -13,7 +13,7 @@
 
 [Try the player](https://s-asakoto.github.io/esmchartplayer/?lang=en)
 
-[Sample Chart](https://github.com/S-Asakoto/esmchartplayer/blob/master/charts/%E7%B5%82%E3%82%8F%E3%82%89%E3%81%AA%E3%81%84%E3%82%B7%E3%83%B3%E3%83%95%E3%82%A9%E3%83%8B%E3%82%A2%20Expert.txt)
+[Sample Chart (終わらないシンフォニア \[Expert Lv.28\])](https://github.com/S-Asakoto/esmchartplayer/blob/master/charts/%E7%B5%82%E3%82%8F%E3%82%89%E3%81%AA%E3%81%84%E3%82%B7%E3%83%B3%E3%83%95%E3%82%A9%E3%83%8B%E3%82%A2%20Expert.txt)
 
 ----
 
@@ -32,7 +32,7 @@
 
 [試試看吧](https://s-asakoto.github.io/esmchartplayer/?lang=zh-Hant)
 
-[譜面](https://github.com/S-Asakoto/esmchartplayer/blob/master/charts/%E7%B5%82%E3%82%8F%E3%82%89%E3%81%AA%E3%81%84%E3%82%B7%E3%83%B3%E3%83%95%E3%82%A9%E3%83%8B%E3%82%A2%20Expert.txt)
+[示例譜面 (終わらないシンフォニア \[Expert Lv.28\])](https://github.com/S-Asakoto/esmchartplayer/blob/master/charts/%E7%B5%82%E3%82%8F%E3%82%89%E3%81%AA%E3%81%84%E3%82%B7%E3%83%B3%E3%83%95%E3%82%A9%E3%83%8B%E3%82%A2%20Expert.txt)
 
 ----
 
@@ -51,7 +51,7 @@
 
 [试试看吧](https://s-asakoto.github.io/esmchartplayer/?lang=zh-Hans)
 
-[谱面例](https://github.com/S-Asakoto/esmchartplayer/blob/master/charts/%E7%B5%82%E3%82%8F%E3%82%89%E3%81%AA%E3%81%84%E3%82%B7%E3%83%B3%E3%83%95%E3%82%A9%E3%83%8B%E3%82%A2%20Expert.txt)
+[示例谱面 (終わらないシンフォニア \[Expert Lv.28\])](https://github.com/S-Asakoto/esmchartplayer/blob/master/charts/%E7%B5%82%E3%82%8F%E3%82%89%E3%81%AA%E3%81%84%E3%82%B7%E3%83%B3%E3%83%95%E3%82%A9%E3%83%8B%E3%82%A2%20Expert.txt)
 
 ----
 
@@ -68,4 +68,4 @@
 
 [試してみよう](https://s-asakoto.github.io/esmchartplayer/?lang=ja)
 
-[サンプル譜面](https://github.com/S-Asakoto/esmchartplayer/blob/master/charts/%E7%B5%82%E3%82%8F%E3%82%89%E3%81%AA%E3%81%84%E3%82%B7%E3%83%B3%E3%83%95%E3%82%A9%E3%83%8B%E3%82%A2%20Expert.txt)
+[サンプル譜面 (終わらないシンフォニア \[Expert Lv.28\])](https://github.com/S-Asakoto/esmchartplayer/blob/master/charts/%E7%B5%82%E3%82%8F%E3%82%89%E3%81%AA%E3%81%84%E3%82%B7%E3%83%B3%E3%83%95%E3%82%A9%E3%83%8B%E3%82%A2%20Expert.txt)
