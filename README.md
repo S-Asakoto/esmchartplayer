@@ -11,7 +11,7 @@
 + Switch from SVG to off-screen canvas (WebGL)
 + Play mode
 
-[Try the player](https://s-asakoto.github.io/esmchartplayer/?lang=en)
+[Try it out](https://s-asakoto.github.io/esmchartplayer/?lang=en)
 
 [Sample Chart (終わらないシンフォニア \[Expert Lv.28\])](https://github.com/S-Asakoto/esmchartplayer/blob/master/charts/%E7%B5%82%E3%82%8F%E3%82%89%E3%81%AA%E3%81%84%E3%82%B7%E3%83%B3%E3%83%95%E3%82%A9%E3%83%8B%E3%82%A2%20Expert.txt)
 
