@@ -661,6 +661,7 @@ $("#lang").on("change", function() {
 	if (!/([?&]lang)=(zh-Han[st]|en|ja)/.test(location.href))
 		href += `${href.indexOf("?") == -1 ? "?" : "&"}lang=${this.value}`;
 	window.history.replaceState("", document.title, href);
+	document.title = Globals.getTranslation("TITLE", document.documentElement.lang);
 }).val(lang);
 $("#combo_pos").on("change", function() {
 	$("#combo").removeClass("top-center bottom-center top-right none").addClass(this.value);
