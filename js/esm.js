@@ -397,6 +397,7 @@ function stopLoop(manual) {
 function readChart() {
 	noteContainer.empty();
 	simulHints.empty();
+	holdSegments.empty();
 	let file = $("#chart").val().replace(levelRegex, "").replace(videoRegex, "").replace(stopRegex, (_, a) => (stopTime = +a) || "");
 	bpmTimings = {};
 	notes = [];
