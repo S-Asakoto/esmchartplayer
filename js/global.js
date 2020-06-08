@@ -1,5 +1,11 @@
 const Globals = (function() {
 	const wordings = {
+		TITLE: {
+			"zh-Hant": "偶像夢幻祭2 Music 譜面播放器",
+			"zh-Hans": "偶像梦幻祭2 Music 谱面播放器",
+			"en": "Ensemble Stars!! Music Chart Player",
+			"ja": "あんさんぶるスターズ!! Music 譜面プレーヤー"
+		},
 		VIDEO_SETTINGS: {
 			"zh-Hant": "影片設定",
 			"zh-Hans": "视频设定",
