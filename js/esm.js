@@ -428,7 +428,7 @@ function readChart() {
 				else {
 					section = +(match[14] || section);
 					bar = +(match[15] || bar);
-					beat = +(match[16] || beat),
+					beat = +(match[16] || beat);
 					let subBeat = match[17] ? match[18] ? match[18] / match[20] : +match[22] || 0 : 0;
 					
 					if (!bpmTimings[section])
