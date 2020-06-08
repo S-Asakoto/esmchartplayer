@@ -285,7 +285,6 @@ function mainLoop(t1) {
 			let w = document.createElementNS("http://www.w3.org/2000/svg", 'path');
 			w.setAttribute("fill", "#fff9");
 			w.setAttribute("stroke-width", 2, "#fff");
-			w.setAttribute("mask", "url(#main_region)");
 			holdSegments.prepend(notes[headCursor].holdSegmentElement = w);
 		}
 	}
