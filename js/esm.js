@@ -476,7 +476,7 @@ function readChart() {
 						follow.push([note.time, note.pos]);
 					else {
 						let count = Math.abs(note.pos - note.follows.pos) * 2;
-						for (let i = 1, p = note.follow.pos; i <= count; i++, p += note.pos < note.follows.pos ? -0.5 : 0.5)
+						for (let i = 1, p = note.follows.pos; i <= count; i++, p += note.pos < note.follows.pos ? -0.5 : 0.5)
 							follow.push([note.follows.time + (note.time - note.follows.time) * i / count, p]);
 					}
 					
