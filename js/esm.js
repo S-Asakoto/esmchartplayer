@@ -428,13 +428,12 @@ function readChart() {
 				else {
 					section = +(match[14] || section);
 					bar = +(match[15] || bar);
-					let intPart = +(match[16] || (beat |0)),
-						fracPart = match[17] ? match[18] ? match[18] / match[20] : +match[22] || 0 : 0;
-					beat = intPart + fracPart;
+					beat = +(match[16] || beat),
+					let subBeat = match[17] ? match[18] ? match[18] / match[20] : +match[22] || 0 : 0;
 					
 					if (!bpmTimings[section])
 						throw `The section is not yet defined in command ${match[0]}`;
-					time = bpmTimings[section].start + (bar * bpmTimings[section].crots + beat) * 60 / bpmTimings[section].bpm;
+					time = bpmTimings[section].start + (bar * bpmTimings[section].crots + beat + subBeat) * 60 / bpmTimings[section].bpm;
 				}
 			}
 
