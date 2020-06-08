@@ -252,8 +252,7 @@ function multiplier(x) {
 	return 3 ** (x * hiSpeed / 5);
 }
 
-function mainLoop() {	
-	let t1 = window.performance.now();
+function mainLoop(t1) {	
 	if (fps[0]) 
 		fpsShow.text((1200 / (t1 - fps[fpsCursor])).toFixed(2) + " FPS").show();
 	fps[fpsCursor] = t1;
@@ -261,7 +260,7 @@ function mainLoop() {
 	let nowTime = VideoSource.player.getCurrentTime() + offset;
 	
 	if (stopTime > nowTime - offset)
-		asTimeout = setTimeout(mainLoop, 1);
+		asTimeout = requestAnimationFrame(mainLoop);
 	else {
 		stopLoop(false);
 		return;
@@ -386,7 +385,7 @@ function mainLoop() {
 }
 
 function stopLoop(manual) {
-	clearTimeout(asTimeout);
+	cancelAnimationFrame(asTimeout);
 	if (VideoSource)
 		VideoSource.player.stopVideo();
 	fpsShow.hide();
