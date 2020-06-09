@@ -193,7 +193,7 @@ function addScore(note, judgment) {
 	}
 	else if (note.type == 3)
 		endEnsembleTime(false);
-	
+
 	if (judgment > 0)
 		popTapEffect(note.pos, numLanes, note.type + note.isHoldHead);
 
@@ -212,7 +212,7 @@ function addScore(note, judgment) {
 	for (let i of skills) {
 		if (!i[2]) {
 			if (note.isSkill) {
-				i[2] = combo == -1 ? -t : t;
+				i[2] = judgment < 2 ? -t : t;
 				scoreUp.addClass("in-effect");
 				break;
 			}
