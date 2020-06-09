@@ -8,7 +8,7 @@
 
 ### Plan
 
-+ Switch from SVG to off-screen canvas (WebGL)
++ Switch from SVG first to canvas (WebGL), then to the still experimental off-screen canvas (supported only on Chrome and Edge) for rendering efficiency
 + <s>Play mode</s> **Implemented**
 
 [Try it out](https://s-asakoto.github.io/esmchartplayer/?lang=en)
@@ -31,7 +31,7 @@
 
 ### 計劃
 
-+ 從SVG過渡到背景畫布(WebGL)
++ 從SVG先過渡到畫布(WebGL)，再過渡到仍處於實驗階段的背景畫布(只有Chrome和Edge支援)以提升繪製效率
 + <s>遊玩模式</s> **已實裝**
 
 [試試看吧](https://s-asakoto.github.io/esmchartplayer/?lang=zh-Hant)
@@ -52,7 +52,7 @@
 
 ### 计划
 
-+ 从SVG过渡到背景画布(WebGL)
++ 从SVG先过渡到画布(WebGL)，再过渡到仍处於实验阶段的背景画布(只有Chrome和Edge支援)以提升绘制效率
 + <s>游玩模式</s> **已实装**
 
 [试试看吧](https://s-asakoto.github.io/esmchartplayer/?lang=zh-Hans)
@@ -71,7 +71,7 @@
 + マルチリンガル - 4つの言語
 
 ### 予定
-+ SVGからオフスクリーンキャンバス(WebGL)に移行
++ レンダリング効率の向上のために、SVGからキャンバス(WebGL)に、更に実験的なオフスクリーンキャンバス(ChromeとEdgeのみがサポートしている)に移行
 + <s>ゲームモード</s> **実装済**
 
 [試してみよう](https://s-asakoto.github.io/esmchartplayer/?lang=ja)
