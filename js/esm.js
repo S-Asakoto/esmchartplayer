@@ -243,8 +243,14 @@ function startEnsembleTime() {
 function startEnsembleSuccess() {
 	if (ensemble >= 1)
 		$(".ui").addClass("hide-ui");
-	else
-		endEnsembleTime();
+	else {
+		$("#ens_marker").removeClass("ensemble-time");
+		$("#ensemble_sp, #ens_gauge").hide();
+		$(".ui").removeClass("hide-ui");
+		$(".mark > circle, #line > path").each(function() {
+			this.setAttribute(this.getAttribute("stroke") ? "stroke" : "fill", "#fff");
+		});
+	}
 }
 
 function endEnsembleTime() {
@@ -253,7 +259,7 @@ function endEnsembleTime() {
 	$(".ui").removeClass("hide-ui");
 	$(".mark > circle, #line > path").each(function() {
 		this.setAttribute(this.getAttribute("stroke") ? "stroke" : "fill", "#fff");
-	})
+	});
 	ensemble = -Infinity;
 }
 
