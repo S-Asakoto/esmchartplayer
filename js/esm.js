@@ -338,7 +338,7 @@ function mainLoop(t1) {
 								addScore(note, 3);
 							else if (timeDiff >= -0.2 && timeDiff <= 0.2) 
 								addScore(note, 2);
-							else
+							else if (timeDiff >= -0.4 && timeDiff <= 0.4)
 								addScore(note, 1);
 						}
 						hasFlickOrTap = true;
