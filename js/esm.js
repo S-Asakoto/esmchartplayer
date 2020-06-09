@@ -3,9 +3,10 @@ const levelRegex = /((EASY)|(NORMAL)|(HARD)|(EXPERT))_LEVEL_(30|[12][0-9]|0?[1-9
 const videoRegex = /v=([A-Za-z0-9-_]{11})/;
 const stopRegex = /stop=(\d+(\.\d+)?)/;
 
+let ruler = 0;
 // set canvas size
 window.onresize = function(e) {
-	let ruler = window.innerHeight / 100;
+	ruler = window.innerHeight / 100;
 	if (window.innerWidth < 1.732 * window.innerHeight)
 		ruler = window.innerWidth / 173.2;
 	document.documentElement.style.setProperty("--ruler", ruler + "px");
@@ -105,10 +106,34 @@ function showEnsembleGauge(ensValue) {
 	ensGaugeRect.attr("width", ensValue * 158);
 }
 
+let touches = {};
 $("#board").on("touchstart", function(e) {
-	//console.log(e);
+	if (!playMode)
+		return;
+
+	for (let touch of e.changedTouches) {
+		touches[touch.identifier] = {
+			x: touch.clientX,
+			oldLane: -1,
+			newLane: (Math.atan2((window.innerHeight / 2 - 40 * ruler) - touch.clientY, touch.clientX - window.innerWidth / 2) * 180 / Math.PI + 90) * (numLanes - 1) / 120,
+			flick: 0,
+			phase: 0
+		};
+	}
 });
 
+$("#board").on("touchmove touchend touchcancel", function(e) {
+	if (!playMode)
+		return;
+
+	for (let touch of e.changedTouches) {
+		touches[touch.identifier].oldLane = touches[touch.identifier].newLane;
+		touches[touch.identifier].newLane = (Math.atan2((window.innerHeight / 2 - 40 * ruler) - touch.clientY, touch.clientX - window.innerWidth / 2) * 180 / Math.PI + 90) * (numLanes - 1) / 120,
+		touches[touch.identifier].flick = Math.sign(touch.clientX - touches[touch.identifier].x);
+		touches[touch.identifier].x = touch.clientX;
+		touches[touch.identifier].phase = 1 + (e.type != "touchmove");
+	}
+});
 
 let bpmTimings = {}, notes = [], ensembleStart = -1, ensembleNote = -1, ensembleEnd = -1;
 let totalCombo = 0, totalCount = 0, totalSkills = 0, totalEnsemble = 0;
@@ -289,6 +314,76 @@ function mainLoop(t1) {
 		}
 	}
 
+	if (playMode) {
+		for (let x in touches) {
+			let touch = touches[x];
+			let hasFlickOrTap = false;
+			for (let i = tailCursor + 1; i <= headCursor; i++) {
+				let note = notes[i];
+				if (note.processed)
+					continue;
+
+				let timeDiff = nowTime - note.time;
+				let isOnLaneNormal = Math.abs(note.pos - touch.newLane) < 0.5, 
+					isOnLaneFlick = isOnLaneNormal || Math.abs(note.pos - touch.oldLane) < 0.5;
+				if (touch.phase == 0) {
+					if (isOnLaneNormal) {
+						if (note.type == 0 || note.type == 3) {
+							if (hasFlickOrTap)
+								continue;
+
+							if (timeDiff >= -0.04 && timeDiff <= 0.04) 
+								addScore(note, 4);
+							else if (timeDiff >= -0.1 && timeDiff <= 0.1) 
+								addScore(note, 3);
+							else if (timeDiff >= -0.2 && timeDiff <= 0.2) 
+								addScore(note, 2);
+							else
+								addScore(note, 1);
+						}
+						hasFlickOrTap = true;
+					}
+				}
+				else {
+					if (note.type == 2 && isOnLaneFlick && note.flickDir == touch.flick) {
+						if (timeDiff >= 0.2)
+							addScore(note, 1);
+						else if (timeDiff >= 0.1)
+							addScore(note, 2);
+						else if (timeDiff >= 0.04)
+							addScore(note, 3);
+						else if (timeDiff >= -0.04)
+							addScore(note, 4);
+					}
+					else if (note.type == 1 && isOnLaneNormal) {
+						if (touch.phase == 2) {
+							if (timeDiff >= -0.04 && timeDiff <= 0.04)
+								addScore(note, 4);
+							else if (timeDiff >= -0.1 && timeDiff <= 0.1)
+								addScore(note, 3);
+						}
+						else if (touch.phase == 1) {
+							if (timeDiff >= 0.2)
+								addScore(note, 1);
+							else if (timeDiff >= 0.1)
+								addScore(note, 2);
+							else if (timeDiff >= 0.04)
+								addScore(note, 3);
+							else if (timeDiff >= 0)
+								addScore(note, 4);
+						}
+					}
+				}
+			}
+		}
+		for (let i of Object.keys(touches)) {
+			if (touches[i].phase == 2)
+				delete touches[i];
+			else if (touches[i].phase == 0)
+				touches[i].phase = 1;
+		}
+	}
+
 	for (let i = headCursor; i > tailCursor; i--) {
 		let note = notes[i];
 		if (!note.processed) {
@@ -398,6 +493,9 @@ function readChart() {
 	noteContainer.empty();
 	simulHints.empty();
 	holdSegments.empty();
+	touches = {};
+	flickDir = {};
+
 	let file = $("#chart").val().replace(levelRegex, "").replace(videoRegex, "").replace(stopRegex, (_, a) => (stopTime = +a) || "");
 	bpmTimings = {};
 	notes = [];
