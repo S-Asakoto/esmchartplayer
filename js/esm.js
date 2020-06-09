@@ -191,6 +191,9 @@ function addScore(note, judgment) {
 		else if (note.addEnsemble)
 			ensemble += (13 + ensSP) * m * [1, 0.5, 1][note.type] / 10 / totalEnsemble;
 	}
+	else if (note.type == 3)
+		endEnsembleTime(false);
+	
 	if (judgment > 0)
 		popTapEffect(note.pos, numLanes, note.type + note.isHoldHead);
 
@@ -243,24 +246,19 @@ function startEnsembleTime() {
 function startEnsembleSuccess() {
 	if (ensemble >= 1)
 		$(".ui").addClass("hide-ui");
-	else {
-		$("#ens_marker").removeClass("ensemble-time");
-		$("#ensemble_sp, #ens_gauge").hide();
-		$(".ui").removeClass("hide-ui");
-		$(".mark > circle, #line > path").each(function() {
-			this.setAttribute(this.getAttribute("stroke") ? "stroke" : "fill", "#fff");
-		});
-	}
+	else 
+		endEnsembleTime(false);
 }
 
-function endEnsembleTime() {
+function endEnsembleTime(resetEnsemble) {
 	$("#ens_marker").removeClass("ensemble-time");
 	$("#ensemble_sp, #ens_gauge").hide();
 	$(".ui").removeClass("hide-ui");
 	$(".mark > circle, #line > path").each(function() {
 		this.setAttribute(this.getAttribute("stroke") ? "stroke" : "fill", "#fff");
 	});
-	ensemble = -Infinity;
+	if (resetEnsemble)
+		ensemble = -Infinity;
 }
 
 function popNote(note) {
@@ -308,7 +306,7 @@ function mainLoop(t1) {
 	if (ensemble < 0 && ensembleStart > 0 && ensembleStart <= nowTime && ensembleEnd > nowTime)
 		startEnsembleTime();
 	else if (ensemble >= 0 && ensembleEnd > 0 && ensembleEnd <= nowTime)
-		endEnsembleTime();
+		endEnsembleTime(true);
 
 	while (headCursor + 1 < notes.length && notes[headCursor + 1].headTime - 5 / hiSpeed <= nowTime) {
 		headCursor++;
@@ -687,7 +685,7 @@ $("#menu_btn").on("click", function() {
 	stopLoop(true);
 	$("#combo").hide();
 	scoreUp.removeClass("in-effect");
-	endEnsembleTime();
+	endEnsembleTime(true);
 }).trigger("click");
 
 $("#setting_yt").on("submit", function(e) {
