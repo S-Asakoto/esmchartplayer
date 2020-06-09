@@ -9,7 +9,7 @@
 ### Plan
 
 + Switch from SVG to off-screen canvas (WebGL)
-+ Play mode
++ <s>Play mode</s> **Implemented**
 
 [Try it out](https://s-asakoto.github.io/esmchartplayer/?lang=en)
 
@@ -32,7 +32,7 @@
 ### 計劃
 
 + 從SVG過渡到背景畫布(WebGL)
-+ 遊玩模式
++ <s>遊玩模式</s> **已實裝**
 
 [試試看吧](https://s-asakoto.github.io/esmchartplayer/?lang=zh-Hant)
 
@@ -53,7 +53,7 @@
 ### 计划
 
 + 从SVG过渡到背景画布(WebGL)
-+ 游玩模式
++ <s>游玩模式</s> **已实装**
 
 [试试看吧](https://s-asakoto.github.io/esmchartplayer/?lang=zh-Hans)
 
@@ -72,7 +72,7 @@
 
 ### 予定
 + SVGからオフスクリーンキャンバス(WebGL)に移行
-+ ゲームモード
++ <s>ゲームモード</s> **実装済**
 
 [試してみよう](https://s-asakoto.github.io/esmchartplayer/?lang=ja)
 
