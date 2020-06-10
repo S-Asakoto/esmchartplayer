@@ -2,7 +2,7 @@ const checkRegex = /((\d+)#(\d+(\.\d+)?):(\d+(\.\d+)?):(\d+(\.\d+)?))|((=)?((((\
 const levelRegex = /((EASY)|(NORMAL)|(HARD)|(EXPERT))_LEVEL_(30|[12][0-9]|0?[1-9])/i;
 const videoRegex = /v=([A-Za-z0-9-_]{11})/;
 const stopRegex = /stop=(\d+(\.\d+)?)/;
-const twoPI = 2 * Math.PI, _130deg = 130 / 180 * Math.PI, _50deg = 50 / 180 * Math.PI;
+const twoPI = 2 * Math.PI, _130deg = 130 / 180 * Math.PI, _50deg = 50 / 180 * Math.PI, quarter = Math.PI / 2;
 
 let ruler = 0;
 // set canvas size
@@ -186,7 +186,7 @@ function drawFlickLeft1([x, y], m) {
     ctx.lineTo(x - 22.4 * m, y - 35 * m);
     ctx.lineTo(x - 22.4 * m, y - 14 * m);
     ctx.lineTo(x + 26.6 * m, y - 14 * m);
-    ctx.arc(x + 26.6 * m, y, 14 * m, -Math.PI / 2, Math.PI / 2);
+    ctx.arc(x + 26.6 * m, y, 14 * m, -quarter, quarter);
     ctx.lineTo(x - 22.4 * m, y + 14 * m);
     ctx.lineTo(x - 22.4 * m, y + 35 * m);
     ctx.closePath();
@@ -224,7 +224,7 @@ function drawFlickRight1([x, y], m) {
     ctx.lineTo(x + 22.4 * m, y + 35 * m);
     ctx.lineTo(x + 22.4 * m, y + 14 * m);
     ctx.lineTo(x - 26.6 * m, y + 14 * m);
-    ctx.arc(x - 26.6 * m, y, 14 * m, Math.PI / 2, -Math.PI / 2);
+    ctx.arc(x - 26.6 * m, y, 14 * m, quarter, -quarter);
     ctx.lineTo(x + 22.4 * m, y - 14 * m);
     ctx.lineTo(x + 22.4 * m, y - 35 * m);
     ctx.closePath();
@@ -596,29 +596,29 @@ function mainLoop(t1) {
                 });
                 let movingAngles = params.slice(0, -1).map((n, i) => Math.atan2(n.y - params[i + 1].y, params[i + 1].x - n.x));
                 for (let i = 0; i < l - 1; i++) {
-                    if (params[i].d < 95)
-                        continue;
-                    let dx = params[i].r * Math.cos(movingAngles[i] + Math.PI / 2),
-                        dy = params[i].r * -Math.sin(movingAngles[i] + Math.PI / 2),
-                        dx2 = params[i + 1].r * Math.cos(movingAngles[i] + Math.PI / 2),
-                        dy2 = params[i + 1].r * -Math.sin(movingAngles[i] + Math.PI / 2);
-                    if (i == 0) {
+                	if (params[i].d < 95 || params[i + 1].d > 800)
+                		continue;
+                    let dx = params[i].r * Math.cos(movingAngles[i] + quarter),
+                        dy = params[i].r * -Math.sin(movingAngles[i] + quarter),
+                        dx2 = params[i + 1].r * Math.cos(movingAngles[i] + quarter),
+                        dy2 = params[i + 1].r * -Math.sin(movingAngles[i] + quarter);
+                    if (command1 == "") {
                         command1 = `M${params[i].x + dx},${params[i].y + dy}`;
                         command2 = `L${params[i].x - dx},${params[i].y - dy} A${params[i].r},${params[i].r},0,0,1,${params[i].x + dx},${params[i].y + dy} Z`;
                     }
                     if (i != l - 2 && movingAngles[i] != movingAngles[i + 1]) {
                         let dir = movingAngles[i + 1] - movingAngles[i];
                         while (dir < 0)
-                            dir += Math.PI * 2;
+                            dir += twoPI;
                         if (dir < Math.PI) {        // Left turn
                             let newRadius = params[i + 1].r / Math.cos(dir / 2);
                             command1 += ` L${params[i + 1].x + newRadius * Math.cos(movingAngles[i] + (Math.PI + dir) / 2)},${params[i + 1].y - newRadius * Math.sin(movingAngles[i] + (Math.PI + dir) / 2)}`;
-                            command2 = `L${params[i + 1].x + params[i + 1].r * Math.cos(movingAngles[i + 1] - Math.PI / 2)},${params[i + 1].y - params[i + 1].r * Math.sin(movingAngles[i + 1] - Math.PI / 2)} A${params[i + 1].r},${params[i + 1].r},0,0,1,${params[i + 1].x - dx2},${params[i + 1].y - dy2} ` + command2;
+                            command2 = `L${params[i + 1].x + params[i + 1].r * Math.cos(movingAngles[i + 1] - quarter)},${params[i + 1].y - params[i + 1].r * Math.sin(movingAngles[i + 1] - quarter)} A${params[i + 1].r},${params[i + 1].r},0,0,1,${params[i + 1].x - dx2},${params[i + 1].y - dy2} ` + command2;
                         }
                         else {                    // Right turn
-                            dir = Math.PI * 2 - dir;
+                            dir = twoPI - dir;
                             let newRadius = params[i + 1].r / Math.cos(dir / 2);
-                            command1 += ` L${params[i + 1].x + dx2},${params[i + 1].y + dy2} A${params[i + 1].r},${params[i + 1].r},0,0,1,${params[i + 1].x + params[i + 1].r * Math.cos(movingAngles[i + 1] + Math.PI / 2)},${params[i + 1].y - params[i + 1].r * Math.sin(movingAngles[i + 1] + Math.PI / 2)}`;
+                            command1 += ` L${params[i + 1].x + dx2},${params[i + 1].y + dy2} A${params[i + 1].r},${params[i + 1].r},0,0,1,${params[i + 1].x + params[i + 1].r * Math.cos(movingAngles[i + 1] + quarter)},${params[i + 1].y - params[i + 1].r * Math.sin(movingAngles[i + 1] + quarter)}`;
                             command2 = `L${params[i + 1].x + newRadius * Math.cos(movingAngles[i] - (Math.PI + dir) / 2)},${params[i + 1].y - newRadius * Math.sin(movingAngles[i] - (Math.PI + dir) / 2)} ` + command2;                        
                         }
                     }
