@@ -512,7 +512,7 @@ function readChart() {
 	totalEnsemble = 0;
 	let section = 1, bar = 0, beat = 0, time = 0, follow = [], match = null;
 
-	while (match = file.match(checkRegex)) {
+	while (match = checkRegex.exec(file)) {
 		if (match[1]) {
 			if (+match[7] == 0)
 				throw `BPM cannot be 0 in command ${match[0]}`;
