@@ -510,9 +510,9 @@ function readChart() {
 	totalCount = 0;
 	totalSkills = 0;
 	totalEnsemble = 0;
-	let section = 1, bar = 0, beat = 0, time = 0, follow = [];
+	let section = 1, bar = 0, beat = 0, time = 0, follow = [], match = null;
 
-	for (let match of file.matchAll(checkRegex)) {
+	while (match = file.match(checkRegex)) {
 		if (match[1]) {
 			if (+match[7] == 0)
 				throw `BPM cannot be 0 in command ${match[0]}`;
