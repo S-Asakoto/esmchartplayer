@@ -71,7 +71,7 @@ function drawSkillNote([x, y], m) {
 	ctx.arc(x, y, 70 * m, 0, twoPI);
 	ctx.fill();
 	ctx.strokeStyle = "#fff";
-    ctx.lineWidth = 11.2 * m;
+	ctx.lineWidth = 11.2 * m;
 	ctx.beginPath();
 	ctx.arc(x, y, 56 * m, 0, twoPI);
 	ctx.stroke();
@@ -122,7 +122,7 @@ function drawTapNote1([x, y], m) {
 	ctx.arc(x, y, 70 * m, 0, twoPI);
 	ctx.fill();
 	ctx.strokeStyle = "#fff";
-    ctx.lineWidth = 11.2 * m;
+	ctx.lineWidth = 11.2 * m;
 	ctx.beginPath();
 	ctx.arc(x, y, 56 * m, 0, twoPI);
 	ctx.stroke();
@@ -145,7 +145,7 @@ function drawHoldHead1([x, y], m) {
 	ctx.arc(x, y, 70 * m, 0, twoPI);
 	ctx.fill();
 	ctx.strokeStyle = "#fff";
-    ctx.lineWidth = 11.2 * m;
+	ctx.lineWidth = 11.2 * m;
 	ctx.beginPath();
 	ctx.arc(x, y, 56 * m, 0, twoPI);
 	ctx.stroke();
@@ -172,7 +172,7 @@ function drawFlickLeft1([x, y], m) {
 	ctx.closePath();
 	ctx.fill();
 	ctx.strokeStyle = "#fff";
-    ctx.lineWidth = 11.2 * m;
+	ctx.lineWidth = 11.2 * m;
 	ctx.beginPath();
 	ctx.moveTo(x - 35.99610 * m, y - 42.89849 * m);
 	ctx.arc(x, y, 56 * m, -_130deg, _130deg);
@@ -210,7 +210,7 @@ function drawFlickRight1([x, y], m) {
 	ctx.closePath();
 	ctx.fill();
 	ctx.strokeStyle = "#fff";
-    ctx.lineWidth = 11.2 * m;
+	ctx.lineWidth = 11.2 * m;
 	ctx.beginPath();
 	ctx.moveTo(x + 35.99610 * m, y + 42.89849 * m);
 	ctx.arc(x, y, 56 * m, _50deg, -_50deg);
@@ -261,7 +261,7 @@ function drawHoldKnot1([x, y], m) {
 
 function drawSimulHint(angle1, angle2, m) {
 	ctx.strokeStyle = "#fff";
-    ctx.lineWidth = 8 * m;
+	ctx.lineWidth = 8 * m;
 	ctx.beginPath();
 	ctx.arc(
 		1250, 
@@ -270,7 +270,7 @@ function drawSimulHint(angle1, angle2, m) {
 		(0.5 - angle1 * 2/3 / (numLanes - 1)) * Math.PI,
 		(0.5 - angle2 * 2/3 / (numLanes - 1)) * Math.PI
 	);
-    ctx.stroke();
+	ctx.stroke();
 }
 
 const gradA = $("#grad_a"), gradB = $("#grad_b"), gradC = $("#grad_c"),
