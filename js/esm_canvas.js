@@ -596,6 +596,8 @@ function mainLoop(t1) {
                 });
                 let movingAngles = params.slice(0, -1).map((n, i) => Math.atan2(n.y - params[i + 1].y, params[i + 1].x - n.x));
                 for (let i = 0; i < l - 1; i++) {
+                    if (params[i].d < 95)
+                        continue;
                     let dx = params[i].r * Math.cos(movingAngles[i] + Math.PI / 2),
                         dy = params[i].r * -Math.sin(movingAngles[i] + Math.PI / 2),
                         dx2 = params[i + 1].r * Math.cos(movingAngles[i] + Math.PI / 2),
@@ -781,9 +783,9 @@ function readChart() {
                     if (note.follows.pos == note.pos)
                         follow.push([note.time, note.pos]);
                     else {
-                        let count = Math.abs(note.pos - note.follows.pos) * 2;
+                        let count = Math.abs(note.pos - note.follows.pos) * 4;
                         for (let i = 1, p = note.follows.pos; i <= count; i++)
-                            follow.push([note.follows.time + (note.time - note.follows.time) * i / count, p += note.pos < note.follows.pos ? -0.5 : 0.5]);
+                            follow.push([note.follows.time + (note.time - note.follows.time) * i / count, p += note.pos < note.follows.pos ? -0.25 : 0.25]);
                     }
                     
                     note.followPath = follow;
