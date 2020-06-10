@@ -71,7 +71,7 @@ function drawSkillNote([x, y], m) {
 	ctx.arc(x, y, 70 * m, 0, twoPI);
 	ctx.fill();
 	ctx.strokeStyle = "#fff";
-    ctx.lineWidth = 11.2;
+    ctx.lineWidth = 11.2 * m;
 	ctx.beginPath();
 	ctx.arc(x, y, 56 * m, 0, twoPI);
 	ctx.stroke();
