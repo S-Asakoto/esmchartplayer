@@ -596,8 +596,8 @@ function mainLoop(t1) {
                 });
                 let movingAngles = params.slice(0, -1).map((n, i) => Math.atan2(n.y - params[i + 1].y, params[i + 1].x - n.x));
                 for (let i = 0; i < l - 1; i++) {
-                	if (params[i].d < 95 || params[i + 1].d > 800)
-                		continue;
+                    if (params[i].d < 95 || params[i + 1].d > 800)
+                        continue;
                     let dx = params[i].r * Math.cos(movingAngles[i] + quarter),
                         dy = params[i].r * -Math.sin(movingAngles[i] + quarter),
                         dx2 = params[i + 1].r * Math.cos(movingAngles[i] + quarter),
