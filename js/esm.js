@@ -1,6 +1,7 @@
 const checkRegex = /((\d+)#(\d+(\.\d+)?):(\d+(\.\d+)?):(\d+(\.\d+)?))|((=)?((((\d+)?:(\d+))?_(\d+))?(\+(\d+(\.\d+)?)\/(\d+(\.\d+)?)|(\.\d+))?|(\d+(\.\d+)?))?([!?~]|@([OSLR])?(-?[01234](\.\d+)?)))/gi;
 const levelRegex = /((EASY)|(NORMAL)|(HARD)|(EXPERT))_LEVEL_(30|[12][0-9]|0?[1-9])/i;
 const videoRegex = /v=([A-Za-z0-9-_]{11})/;
+const startRegex = /start=(\d+(\.\d+)?)/;
 const stopRegex = /stop=(\d+(\.\d+)?)/;
 
 let ruler = 0;
@@ -146,7 +147,7 @@ let skills = [];
 let asTimeout = null;
 let ensemble = -Infinity;
 let offset = 0, hiSpeed = 1, numLanes = 0, noteSize = 1;
-let stopTime = 0;
+let startTime = 0, stopTime = 0;
 let fps = Array(50).fill(0), fpsCursor = 0;
 
 function addScore(note, judgment) {
@@ -500,7 +501,11 @@ function readChart() {
 	touches = {};
 	flickDir = {};
 
-	let file = $("#chart").val().replace(levelRegex, "").replace(videoRegex, "").replace(stopRegex, (_, a) => (stopTime = +a) || "");
+	let file = $("#chart").val()
+	                      .replace(levelRegex, "")
+	                      .replace(videoRegex, "")
+	                      .replace(startRegex, (_, a) => (startTime = +a) || "");
+	                      .replace(stopRegex, (_, a) => (stopTime = +a) || "");
 	bpmTimings = {};
 	notes = [];
 	ensembleStart = -1;
