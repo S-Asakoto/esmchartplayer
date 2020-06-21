@@ -504,7 +504,7 @@ function readChart() {
 	let file = $("#chart").val()
 	                      .replace(levelRegex, "")
 	                      .replace(videoRegex, "")
-	                      .replace(startRegex, (_, a) => (startTime = +a) || "");
+	                      .replace(startRegex, (_, a) => (startTime = +a) || "")
 	                      .replace(stopRegex, (_, a) => (stopTime = +a) || "");
 	bpmTimings = {};
 	notes = [];
