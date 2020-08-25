@@ -1,7 +1,6 @@
 const checkRegex = /((\d+)#(\d+(\.\d+)?):(\d+(\.\d+)?):(\d+(\.\d+)?))|((=)?((((\d+)?:(\d+))?_(\d+))?(\+(\d+(\.\d+)?)\/(\d+(\.\d+)?)|(\.\d+))?|(\d+(\.\d+)?))?([!?~]|@([OSLR])?(-?[01234](\.\d+)?)))/gi;
 const levelRegex = /((EASY)|(NORMAL)|(HARD)|(EXPERT))_LEVEL_(30|[12][0-9]|0?[1-9])/i;
 const videoRegex = /v=([A-Za-z0-9-_]{11})/;
-const startRegex = /start=(\d+(\.\d+)?)/;
 const stopRegex = /stop=(\d+(\.\d+)?)/;
 const twoPI = 2 * Math.PI, _130deg = 130 / 180 * Math.PI, _50deg = 50 / 180 * Math.PI, quarter = Math.PI / 2;
 
@@ -362,7 +361,7 @@ let skills = [];
 let asTimeout = null;
 let ensemble = -Infinity;
 let offset = 0, hiSpeed = 1, numLanes = 0, noteSize = 1;
-let startTime = 0, stopTime = 0;
+let stopTime = 0;
 let fps = Array(50).fill(0), fpsCursor = 0;
 
 function addScore(note, judgment) {
@@ -468,21 +467,10 @@ function multiplier(x) {
     return 3 ** (x * hiSpeed / 5);
 }
 
-function mainLoop(t1) {    
+function mainLoop(t1 = performance.now()) {    
     ctx.clearRect(0, 0, 2500, 2500);
 
-    if (fps[0]) 
-        fpsShow.text((1200 / (t1 - fps[fpsCursor])).toFixed(2) + " FPS").show();
-    fps[fpsCursor] = t1;
-
     let nowTime = VideoSource.player.getCurrentTime() + offset;
-    
-    if (stopTime > nowTime - offset)
-        asTimeout = requestAnimationFrame(mainLoop);
-    else {
-        stopLoop(false);
-        return;
-    }
 
     let hasSkill = false;
     for (let skill of skills) {
@@ -597,8 +585,8 @@ function mainLoop(t1) {
                 });
                 let movingAngles = params.slice(0, -1).map((n, i) => Math.atan2(n.y - params[i + 1].y, params[i + 1].x - n.x));
                 for (let i = 0; i < l - 1; i++) {
-                    if (params[i].d < 95 || params[i + 1].d > 800)
-                        continue;
+                	if (params[i].d < 95 || params[i + 1].d > 800)
+                		continue;
                     let dx = params[i].r * Math.cos(movingAngles[i] + quarter),
                         dy = params[i].r * -Math.sin(movingAngles[i] + quarter),
                         dx2 = params[i + 1].r * Math.cos(movingAngles[i] + quarter),
@@ -693,6 +681,21 @@ function mainLoop(t1) {
     while (tailCursor < headCursor && notes[tailCursor + 1].processed)
         tailCursor++;
 
+    clearTimeout(asTimeout);
+    let renderTime = performance.now() - t1;
+    if (stopTime > nowTime - offset) {
+        //asTimeout = requestAnimationFrame(mainLoop);
+        asTimeout = setTimeout(mainLoop, renderTime < 940 / 60 ? 1000 / 60 - renderTime : 1);
+
+        if (fps[0]) 
+            fpsShow.text((1200 / (t1 - fps[fpsCursor])).toFixed(2) + ` FPS (Rendering time = ${renderTime} ms)`).show();
+        fps[fpsCursor] = t1;
+    }
+    else {
+        stopLoop(false);
+        return;
+    }
+
 }
 
 function stopLoop(manual) {
@@ -710,11 +713,7 @@ function readChart() {
     touches = {};
     flickDir = {};
 
-	let file = $("#chart").val()
-	                      .replace(levelRegex, "")
-	                      .replace(videoRegex, "")
-	                      .replace(startRegex, (_, a) => (startTime = +a) || "")
-	                      .replace(stopRegex, (_, a) => (stopTime = +a) || "");
+    let file = $("#chart").val().replace(levelRegex, "").replace(videoRegex, "").replace(stopRegex, (_, a) => (stopTime = +a) || "");
     bpmTimings = {};
     notes = [];
     ensembleStart = -1;
@@ -725,6 +724,11 @@ function readChart() {
     totalSkills = 0;
     totalEnsemble = 0;
     let section = 1, bar = 0, beat = 0, time = 0, follow = [];
+
+    checkRegex.exec("");
+    levelRegex.exec("");
+    videoRegex.exec("");
+    stopRegex.exec("");
 
     let match = null;
     while (match = checkRegex.exec(file)) {
