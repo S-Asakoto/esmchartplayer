@@ -681,7 +681,6 @@ function mainLoop(t1 = performance.now()) {
     while (tailCursor < headCursor && notes[tailCursor + 1].processed)
         tailCursor++;
 
-    clearTimeout(asTimeout);
     let renderTime = performance.now() - t1;
     if (stopTime > nowTime - offset) {
         //asTimeout = requestAnimationFrame(mainLoop);
@@ -699,7 +698,7 @@ function mainLoop(t1 = performance.now()) {
 }
 
 function stopLoop(manual) {
-    cancelAnimationFrame(asTimeout);
+    clearTimeout(asTimeout);
     if (VideoSource)
         VideoSource.player.stopVideo();
     fpsShow.hide();
@@ -788,13 +787,15 @@ function readChart() {
 
                 if (isFollow) {
                     note.follows = notes[totalCombo - 1];
+
+                    let followEnd = follow[follow.length - 1];
                     
-                    if (note.follows.pos == note.pos)
+                    if (followEnd[1] == note.pos)
                         follow.push([note.time, note.pos]);
                     else {
-                        let count = Math.abs(note.pos - note.follows.pos) * 4;
-                        for (let i = 1, p = note.follows.pos; i <= count; i++)
-                            follow.push([note.follows.time + (note.time - note.follows.time) * i / count, p += note.pos < note.follows.pos ? -0.25 : 0.25]);
+                        let count = Math.abs(note.pos - followEnd[1]) * 4;
+                        for (let i = 1, p = followEnd[1]; i <= count; i++)
+                            follow.push([followEnd[0] + (note.time - followEnd[0]) * i / count, p += note.pos < followEnd[1] ? -0.25 : 0.25]);
                     }
                     
                     note.followPath = follow;
