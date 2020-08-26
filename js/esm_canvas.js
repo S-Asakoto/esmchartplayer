@@ -804,8 +804,8 @@ function readChart() {
                         throw `The first note cannot follow any note in command ${match[0]}`;
                     else if (note.type == 3 || note.isSkill) 
                         throw `A skill note or an Ensemble Note cannot follow any note in command ${match[0]}`;
-                    else if (note.follows.type > 1)
-                        throw `A note cannot follow a flick or an Ensemble Note in command ${match[0]}`;
+                    else if (note.follows.type > 2)
+                        throw `A note cannot follow an Ensemble Note in command ${match[0]}`;
                     else if (note.follows.time >= note.time)
                         throw `A note cannot follow a note from behind in command ${match[0]}`;
                     else if (note.type >= 1) {
