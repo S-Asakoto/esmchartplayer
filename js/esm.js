@@ -1,7 +1,6 @@
 const checkRegex = /((\d+)#(\d+(\.\d+)?):(\d+(\.\d+)?):(\d+(\.\d+)?))|((=)?((((\d+)?:(\d+))?_(\d+))?(\+(\d+(\.\d+)?)\/(\d+(\.\d+)?)|(\.\d+))?|(\d+(\.\d+)?))?([!?~]|@([OSLR])?(-?[01234](\.\d+)?)))/gi;
 const levelRegex = /((EASY)|(NORMAL)|(HARD)|(EXPERT))_LEVEL_(30|[12][0-9]|0?[1-9])/i;
 const videoRegex = /v=([A-Za-z0-9-_]{11})/;
-const startRegex = /start=(\d+(\.\d+)?)/;
 const stopRegex = /stop=(\d+(\.\d+)?)/;
 
 let ruler = 0;
@@ -147,7 +146,7 @@ let skills = [];
 let asTimeout = null;
 let ensemble = -Infinity;
 let offset = 0, hiSpeed = 1, numLanes = 0, noteSize = 1;
-let startTime = 0, stopTime = 0;
+let stopTime = 0;
 let fps = Array(50).fill(0), fpsCursor = 0;
 
 function addScore(note, judgment) {
@@ -283,18 +282,7 @@ function multiplier(x) {
 }
 
 function mainLoop(t1) {	
-	if (fps[0]) 
-		fpsShow.text((1200 / (t1 - fps[fpsCursor])).toFixed(2) + " FPS").show();
-	fps[fpsCursor] = t1;
-
 	let nowTime = VideoSource.player.getCurrentTime() + offset;
-	
-	if (stopTime > nowTime - offset)
-		asTimeout = requestAnimationFrame(mainLoop);
-	else {
-		stopLoop(false);
-		return;
-	}
 
 	let hasSkill = false;
 	for (let skill of skills) {
@@ -481,10 +469,24 @@ function mainLoop(t1) {
 	while (tailCursor < headCursor && notes[tailCursor + 1].processed)
 		tailCursor++;
 
+    let renderTime = performance.now() - t1;
+    if (stopTime > nowTime - offset) {
+        //asTimeout = requestAnimationFrame(mainLoop);
+        asTimeout = setTimeout(mainLoop, renderTime < 940 / 60 ? 1000 / 60 - renderTime : 1);
+
+        if (fps[0]) 
+            fpsShow.text((1200 / (t1 - fps[fpsCursor])).toFixed(2) + ` FPS (Rendering time = ${renderTime} ms)`).show();
+        fps[fpsCursor] = t1;
+    }
+    else {
+        stopLoop(false);
+        return;
+    }
+
 }
 
 function stopLoop(manual) {
-	cancelAnimationFrame(asTimeout);
+	clearTimeout(asTimeout);
 	if (VideoSource)
 		VideoSource.player.stopVideo();
 	fpsShow.hide();
@@ -501,11 +503,7 @@ function readChart() {
 	touches = {};
 	flickDir = {};
 
-	let file = $("#chart").val()
-	                      .replace(levelRegex, "")
-	                      .replace(videoRegex, "")
-	                      .replace(startRegex, (_, a) => (startTime = +a) || "")
-	                      .replace(stopRegex, (_, a) => (stopTime = +a) || "");
+	let file = $("#chart").val().replace(levelRegex, "").replace(videoRegex, "").replace(stopRegex, (_, a) => (stopTime = +a) || "");
 	bpmTimings = {};
 	notes = [];
 	ensembleStart = -1;
@@ -515,9 +513,14 @@ function readChart() {
 	totalCount = 0;
 	totalSkills = 0;
 	totalEnsemble = 0;
-	let section = 1, bar = 0, beat = 0, time = 0, follow = [], match = null;
+	let section = 1, bar = 0, beat = 0, time = 0, follow = [];
 
-	while (match = checkRegex.exec(file)) {
+    checkRegex.exec("");
+    levelRegex.exec("");
+    videoRegex.exec("");
+    stopRegex.exec("");
+
+	for (let match of file.matchAll(checkRegex)) {
 		if (match[1]) {
 			if (+match[7] == 0)
 				throw `BPM cannot be 0 in command ${match[0]}`;
@@ -577,14 +580,16 @@ function readChart() {
 
 				if (isFollow) {
 					note.follows = notes[totalCombo - 1];
-					
-					if (note.follows.pos == note.pos)
-						follow.push([note.time, note.pos]);
-					else {
-						let count = Math.abs(note.pos - note.follows.pos) * 2;
-						for (let i = 1, p = note.follows.pos; i <= count; i++)
-							follow.push([note.follows.time + (note.time - note.follows.time) * i / count, p += note.pos < note.follows.pos ? -0.5 : 0.5]);
-					}
+
+                    let followEnd = follow[follow.length - 1];
+                    
+                    if (followEnd[1] == note.pos)
+                        follow.push([note.time, note.pos]);
+                    else {
+                        let count = Math.abs(note.pos - followEnd[1]) * 4;
+                        for (let i = 1, p = followEnd[1]; i <= count; i++)
+                            follow.push([followEnd[0] + (note.time - followEnd[0]) * i / count, p += note.pos < followEnd[1] ? -0.25 : 0.25]);
+                    }
 					
 					note.followPath = follow;
 					note.headTime = follow[0][0];
@@ -592,8 +597,8 @@ function readChart() {
 						throw `The first note cannot follow any note in command ${match[0]}`;
 					else if (note.type == 3 || note.isSkill) 
 						throw `A skill note or an Ensemble Note cannot follow any note in command ${match[0]}`;
-					else if (note.follows.type > 1)
-						throw `A note cannot follow a flick or an Ensemble Note in command ${match[0]}`;
+					else if (note.follows.type > 2)
+						throw `A note cannot follow an Ensemble Note in command ${match[0]}`;
 					else if (note.follows.time >= note.time)
 						throw `A note cannot follow a note from behind in command ${match[0]}`;
 					else if (note.type >= 1) {
