@@ -745,7 +745,7 @@ $("input[type=range]").on("input", function(e) {
 });
 
 $("#fs").on("click", function() {
-	if (!document.fullscreenEnabled)
+	if (!document.fullscreenEnabled && !document.webkitFullscreenEnabled)
 		return;
 	if (document.fullscreenElement || document.mozFullScreenElement 
 		|| document.webkitFullscreenElement || document.msFullscreenElement)
