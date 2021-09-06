@@ -108,10 +108,12 @@ function showEnsembleGauge(ensValue) {
 
 let touches = {};
 $("#board").on("touchstart", function(e) {
-	if (!playMode)
-		return;
-        if (e.target.id != "menu_btn")
+        if (e.target.id == "menu_btn")
+                $("#menu_btn").trigger("click");
+        else if (!playMode)
                 e.preventDefault();
+
+	
 
 	for (let touch of e.changedTouches) {
 		touches[touch.identifier] = {
