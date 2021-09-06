@@ -110,6 +110,7 @@ let touches = {};
 $("#board").on("touchstart", function(e) {
 	if (!playMode)
 		return;
+        e.preventDefault();
 
 	for (let touch of e.changedTouches) {
 		touches[touch.identifier] = {
@@ -125,6 +126,7 @@ $("#board").on("touchstart", function(e) {
 $("#board").on("touchmove touchend touchcancel", function(e) {
 	if (!playMode)
 		return;
+        e.preventDefault();
 
 	for (let touch of e.changedTouches) {
 		touches[touch.identifier].oldLane = touches[touch.identifier].newLane;
