@@ -110,7 +110,7 @@ let touches = {};
 $("#board").on("touchstart", function(e) {
         if (!playMode) 
                 return;
-        e.preventDefault():
+        e.preventDefault();
         if (e.target.id == "menu_btn")
                 $("#menu_btn").trigger("click");
 
