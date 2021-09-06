@@ -110,7 +110,8 @@ let touches = {};
 $("#board").on("touchstart", function(e) {
 	if (!playMode)
 		return;
-        e.preventDefault();
+        if (e.target.id == "menu_btn")
+                e.preventDefault();
 
 	for (let touch of e.changedTouches) {
 		touches[touch.identifier] = {
