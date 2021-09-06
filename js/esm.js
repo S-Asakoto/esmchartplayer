@@ -329,13 +329,13 @@ function mainLoop(t1) {
 							if (hasFlickOrTap)
 								continue;
 
-							if (timeDiff >= -0.04 && timeDiff <= 0.04) 
+							if (timeDiff >= -0.05 && timeDiff <= 0.05) 
 								addScore(note, 4);
 							else if (timeDiff >= -0.1 && timeDiff <= 0.1) 
 								addScore(note, 3);
-							else if (timeDiff >= -0.2 && timeDiff <= 0.2) 
+							else if (timeDiff >= -0.15 && timeDiff <= 0.15) 
 								addScore(note, 2);
-							else if (timeDiff >= -0.4 && timeDiff <= 0.4)
+							else if (timeDiff >= -0.2 && timeDiff <= 0.2)
 								addScore(note, 1);
 						}
 						hasFlickOrTap = true;
@@ -343,28 +343,28 @@ function mainLoop(t1) {
 				}
 				else {
 					if (note.type == 2 && isOnLaneFlick && note.flickDir == touch.flick) {
-						if (timeDiff >= 0.2)
+						if (timeDiff >= 0.15)
 							addScore(note, 1);
 						else if (timeDiff >= 0.1)
 							addScore(note, 2);
-						else if (timeDiff >= 0.04)
+						else if (timeDiff >= 0.05)
 							addScore(note, 3);
-						else if (timeDiff >= -0.04)
+						else if (timeDiff >= -0.05)
 							addScore(note, 4);
 					}
 					else if (note.type == 1 && isOnLaneNormal) {
 						if (touch.phase == 2) {
-							if (timeDiff >= -0.04 && timeDiff <= 0.04)
+							if (timeDiff >= -0.05 && timeDiff <= 0.05)
 								addScore(note, 4);
 							else if (timeDiff >= -0.1 && timeDiff <= 0.1)
 								addScore(note, 3);
 						}
 						else if (touch.phase == 1) {
-							if (timeDiff >= 0.2)
+							if (timeDiff >= 0.15)
 								addScore(note, 1);
 							else if (timeDiff >= 0.1)
 								addScore(note, 2);
-							else if (timeDiff >= 0.04)
+							else if (timeDiff >= 0.05)
 								addScore(note, 3);
 							else if (timeDiff >= 0)
 								addScore(note, 4);
@@ -749,9 +749,9 @@ $("#fs").on("click", function() {
 		return;
 	if (document.fullscreenElement || document.mozFullScreenElement 
 		|| document.webkitFullscreenElement || document.msFullscreenElement)
-		document.exitFullscreen();
+		(document.exitFullscreen || document.webkitExitFullscreen)();
 	else
-		document.body.requestFullscreen();
+		(document.body.requestFullscreen || document.body.webkitRequestFullscreen)();
 });
 
 
