@@ -107,14 +107,13 @@ function showEnsembleGauge(ensValue) {
 }
 
 let touches = {};
-$("#board").on("touchstart", function(e) {
+$("#touch_area").on("touchstart", function(e) {
 	if (!playMode) 
 		return;
 	e.preventDefault();
-	if (e.target.id == "menu_btn")
-		$("#menu_btn").trigger("click");
 
 	for (let touch of e.changedTouches) {
+		console.log(touch.identifier, e.type, e.target.id);
 		touches[touch.identifier] = {
 			x: touch.clientX,
 			y: touch.clientY,
@@ -134,12 +133,13 @@ function signWithThreshold(value, threshold) {
 	return Math.sign(value);
 }
 
-$("#board").on("touchmove touchend touchcancel", function(e) {
+$("#touch_area").on("touchmove touchend touchcancel", function(e) {
 	if (!playMode)
 		return;
-    e.preventDefault();
+    //e.preventDefault();
 
 	for (let touch of e.changedTouches) {
+		console.log(touch.identifier, e.type);
 		let _oldFlickX = touches[touch.identifier].flickX,
 		    _oldFlickY = touches[touch.identifier].flickY;
 		touches[touch.identifier].oldLane = touches[touch.identifier].newLane;
@@ -302,7 +302,7 @@ function startEnsembleTime() {
 
 function startEnsembleSuccess() {
 	if (ensemble >= 1)
-		$(".ui").addClass("hide-ui");
+		$(".ui, #menu_btn").addClass("hide-ui");
 	else 
 		endEnsembleTime(false);
 }
@@ -310,7 +310,7 @@ function startEnsembleSuccess() {
 function endEnsembleTime(resetEnsemble) {
 	$("#ens_marker").removeClass("ensemble-time");
 	$("#ensemble_sp, #ens_gauge").hide();
-	$(".ui").removeClass("hide-ui");
+	$(".ui, #menu_btn").removeClass("hide-ui");
 	$(".mark > circle, #line > path").each(function() {
 		this.setAttribute(this.getAttribute("stroke") ? "stroke" : "fill", "#fff");
 	});
