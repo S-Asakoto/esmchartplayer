@@ -160,6 +160,7 @@ function bankerRound(v) {
 	return _v;
 }
 
+let judgmentSPTimeout = null;
 function addScore(note, judgment, fs) {
 	note.processed = true;
 	note.noteElement.remove();
@@ -264,7 +265,13 @@ function addScore(note, judgment, fs) {
 
 	$("#judgment").removeClass("perfect great good bad miss beat2").show();
 	$("#judgment").addClass("beat2 " + c).attr("data-judge", w);
-	$("#judgment_sp")[["hide", "show"][+judgmentSupport]]();
+	if (judgmentSupport) {
+		if (judgmentSPTimeout) clearTimeout(judgmentSPTimeout);
+		$("#judgment_sp").show();
+		judgmentSPTimeout = setTimeout(function() {
+			$("#judgment_sp").hide();
+		}, 1500);
+	} 
 	$("#judgment_fs").attr("data-judge", judgmentFS);
 }
 
