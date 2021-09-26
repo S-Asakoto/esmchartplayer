@@ -108,11 +108,11 @@ function showEnsembleGauge(ensValue) {
 
 let touches = {};
 $("#board").on("touchstart", function(e) {
-        if (!playMode) 
-                return;
-        e.preventDefault();
-        if (e.target.id == "menu_btn")
-                $("#menu_btn").trigger("click");
+	if (!playMode) 
+		return;
+	e.preventDefault();
+	if (e.target.id == "menu_btn")
+		$("#menu_btn").trigger("click");
 
 	for (let touch of e.changedTouches) {
 		touches[touch.identifier] = {
@@ -137,11 +137,11 @@ function signWithThreshold(value, threshold) {
 $("#board").on("touchmove touchend touchcancel", function(e) {
 	if (!playMode)
 		return;
-        e.preventDefault();
+    e.preventDefault();
 
 	for (let touch of e.changedTouches) {
 		let _oldFlickX = touches[touch.identifier].flickX,
-		    _oldFlickY = touches[touch.identifier].flickY,
+		    _oldFlickY = touches[touch.identifier].flickY;
 		touches[touch.identifier].oldLane = touches[touch.identifier].newLane;
 		touches[touch.identifier].newLane = (Math.atan2((window.innerHeight / 2 - 40 * ruler) - touch.clientY, touch.clientX - window.innerWidth / 2) * 180 / Math.PI + 90) * (numLanes - 1) / 120,
 		touches[touch.identifier].flickX = signWithThreshold(touch.clientX - touches[touch.identifier]._refX, 2 * ruler), 
