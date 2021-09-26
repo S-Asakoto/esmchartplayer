@@ -822,9 +822,9 @@ $("#fs").on("click", function() {
 		return;
 	if (document.fullscreenElement || document.mozFullScreenElement 
 		|| document.webkitFullscreenElement || document.msFullscreenElement)
-		(document.exitFullscreen || document.webkitExitFullscreen)();
+		(document.exitFullscreen || document.webkitExitFullscreen).call(document);
 	else
-		(document.body.requestFullscreen || document.body.webkitRequestFullscreen)();
+		(document.body.requestFullscreen || document.body.webkitRequestFullscreen).call(document.body);
 });
 
 
