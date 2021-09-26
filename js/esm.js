@@ -547,7 +547,7 @@ function mainLoop(t1) {
         asTimeout = setTimeout(mainLoop, renderTime < 940 / 60 ? 1000 / 60 - renderTime : 1);
 
         if (fps[0]) 
-            fpsShow.text((60000 / (t1 - fps[fpsCursor])).toFixed(2) + ` FPS (Rendering time = ${renderTime.toFixed(1)} ms); #Touches = ${Object.keys(touches).length}`).show();
+            fpsShow.text((60000 / (t1 - fps[fpsCursor])).toFixed(2) + ` FPS (Rendering time = ${renderTime.toFixed(1)} ms); #Touches = ${Object.keys(touches).length}; Voltage = ${(vol * 100).toFixed(2)}; Ensemble = ${(ensemble * 100).toFixed(2)}`).show();
         fps[fpsCursor] = t1;
 		fpsCursor = (fpsCursor + 1) % 50;
     }
