@@ -13,7 +13,7 @@ html, body, #board {
 	margin: 0;
 	padding: 0;
 	overscroll-behavior: none;
-        touch-action: none;
+	touch-action: none;
 }
 
 #board * {
@@ -255,6 +255,37 @@ body {
 	padding: 0.3em 0.6em;
 	position: absolute;
 	border-radius: 0.3em;
+}
+
+#judgment_sp {
+	left: 50%;
+	transform: translateX(-50%);
+	top: calc(7 * var(--ruler));
+}
+
+
+.fastslow::after {
+	content: none;
+	color: #fff;
+	font-weight: 800;
+	font-size: calc(2 * var(--ruler));
+	line-height: 1;
+	padding: 0.1em 0.6em;
+	position: absolute;
+	border-radius: 0.3em;
+	left: 50%;
+	transform: translateX(-50%);
+	top: calc(-1 * var(--ruler));
+}
+
+.fastslow[data-judge=FAST]::after {
+	content: "FAST";
+	background-color: #ff4d02;
+}
+
+.fastslow[data-judge=SLOW]::after {
+	content: "SLOW";
+	background-color: #276190;
 }
 
 #score_up.in-effect {

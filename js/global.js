@@ -144,6 +144,12 @@ const Globals = (function() {
 			"en": "Bottom",
 			"ja": "下"
 		},
+		SHOW: {
+			"zh-Hant": "顯示",
+			"zh-Hans": "显示",
+			"en": "Show",
+			"ja": "表示"
+		}, 
 		HIDDEN: {
 			"zh-Hant": "隱藏",
 			"zh-Hans": "隐藏",

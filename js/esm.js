@@ -152,8 +152,15 @@ let ensemble = -Infinity;
 let offset = 0, hiSpeed = 1, numLanes = 0, noteSize = 1;
 let stopTime = 0;
 let fps = Array(50).fill(0), fpsCursor = 0;
+let comboSP1 = 0, comboSP2 = 0, comboSP1Lv = 0, comboSP2Lv = 0, perfectSP = 0;
 
-function addScore(note, judgment) {
+function bankerRound(v) {
+	let _v = Math.round(v);
+	if (v % 2 == 0.5) _v--;
+	return _v;
+}
+
+function addScore(note, judgment, fs) {
 	note.processed = true;
 	note.noteElement.remove();
 	note.noteElement = null;
@@ -167,8 +174,27 @@ function addScore(note, judgment) {
 		note.holdSegmentElement = null;
 	}
 
+	let judgmentSupport = false;
+	if (perfectSP > 0 && (judgment == 2 || judgment == 3)) {
+		perfectSP--;
+		judgment = 4;
+		judgmentSupport = true;
+	}
+	else if (comboSP1 > 0 && (judgment < 2 && judgment >= 1 - (comboSP1Lv > 1))) {
+		comboSP1--;
+		judgment = 2 + (comboSP1Lv >= 3) + (comboSP1Lv == 5);
+		judgmentSupport = true;
+	}
+	else if (comboSP2 > 0 && (judgment < 2 && judgment >= 1 - (comboSP2Lv > 1))) {
+		comboSP2--;
+		judgment = 2 + (comboSP2Lv >= 3) + (comboSP2Lv == 5);
+		judgmentSupport = true;
+	}
+
 	let j = Math.random();
 	let c = "", m = 0;
+	let judgmentFS = "";
+
 	if (judgment == 4) {
 		c = "perfect";
 		m = 1;
@@ -176,14 +202,17 @@ function addScore(note, judgment) {
 	else if (judgment == 3) {
 		c = "great";
 		m = 0.8;
+		judgmentFS = fs;
 	}
 	else if (judgment == 2) {
 		c = "good";
 		m = 0.5;
+		judgmentFS = fs;
 	}
 	else {
 		combo = 0;
 		c = judgment == 1 ? "bad" : "miss";
+		judgmentFS = judgment == 1 ? fs : "";
 		vol -= 0.5 * [1, 0.5, 1, 0][note.type] / (10 + volSP);
 	}
 
@@ -225,7 +254,7 @@ function addScore(note, judgment) {
 			mult += i[1] / 100;
 	}
 		
-	showScore(score += Math.round(Math.round(stats * 2 / totalCount) * mult * [1, 0.5, 1, 10][note.type] * m), +chartDiffSelect.val());
+	showScore(score += bankerRound(bankerRound(stats * 2 / totalCount) * mult * [1, 0.5, 1, ensemble >= 1 ? 10 : 1][note.type] * m), +chartDiffSelect.val());
 	showVoltage(vol);
 	showEnsembleGauge(ensemble);
 
@@ -235,6 +264,8 @@ function addScore(note, judgment) {
 
 	$("#judgment").removeClass("perfect great good bad miss beat2").show();
 	$("#judgment").addClass("beat2 " + c).attr("data-judge", w);
+	$("#judgment_sp")[["hide", "show"][+judgmentSupport]]();
+	$("#judgment_fs").attr("data-judge", judgmentFS);
 }
 
 function startEnsembleTime() {
@@ -321,8 +352,8 @@ function mainLoop(t1) {
 					continue;
 
 				let timeDiff = nowTime - note.time;
-				let isOnLaneNormal = Math.abs(note.pos - touch.newLane) < 0.5, 
-					isOnLaneFlick = isOnLaneNormal || Math.abs(note.pos - touch.oldLane) < 0.5;
+				let isOnLaneNormal = Math.abs(note.pos - touch.newLane) < 0.9, 
+					isOnLaneFlick = isOnLaneNormal || Math.abs(note.pos - touch.oldLane) < 0.9;
 				if (touch.phase == 0) {
 					if (isOnLaneNormal) {
 						if (note.type == 0 || note.type == 3) {
@@ -331,41 +362,55 @@ function mainLoop(t1) {
 
 							if (timeDiff >= -0.05 && timeDiff <= 0.05) 
 								addScore(note, 4);
-							else if (timeDiff >= -0.1 && timeDiff <= 0.1) 
-								addScore(note, 3);
-							else if (timeDiff >= -0.15 && timeDiff <= 0.15) 
-								addScore(note, 2);
-							else if (timeDiff >= -0.2 && timeDiff <= 0.2)
-								addScore(note, 1);
+							else if (timeDiff >= -0.085 && timeDiff <= 0.085) 
+								addScore(note, 3, timeDiff > 0 ? "SLOW" : "FAST");
+							else if (timeDiff >= -0.12 && timeDiff <= 0.12) 
+								addScore(note, 2, timeDiff > 0 ? "SLOW" : "FAST");
+							else if (timeDiff >= -0.17 && timeDiff <= 0.17)
+								addScore(note, 1, timeDiff > 0 ? "SLOW" : "FAST");
 						}
 						hasFlickOrTap = true;
 					}
 				}
 				else {
 					if (note.type == 2 && isOnLaneFlick && note.flickDir == touch.flick) {
-						if (timeDiff >= 0.15)
-							addScore(note, 1);
-						else if (timeDiff >= 0.1)
-							addScore(note, 2);
-						else if (timeDiff >= 0.05)
-							addScore(note, 3);
-						else if (timeDiff >= -0.05)
+						if (hasFlickOrTap)
+							continue;
+
+						if (note.follows == null) {
+							if (timeDiff >= -0.17 && timeDiff < -0.1)
+								addScore(note, 3, "FAST");
+							else if (timeDiff >= -0.24)
+								addScore(note, 2, "FAST");
+							else if (timeDiff >= -0.34)
+								addScore(note, 1, "FAST");
+						}
+						
+						if (timeDiff >= 0.155)
+							addScore(note, 1, "SLOW");
+						else if (timeDiff >= 0.11)
+							addScore(note, 2, "SLOw");
+						else if (timeDiff >= 0.075)
+							addScore(note, 3, "SLOW");
+						else if (timeDiff >= -0.1)
 							addScore(note, 4);
 					}
 					else if (note.type == 1 && isOnLaneNormal) {
 						if (touch.phase == 2) {
 							if (timeDiff >= -0.05 && timeDiff <= 0.05)
 								addScore(note, 4);
-							else if (timeDiff >= -0.1 && timeDiff <= 0.1)
-								addScore(note, 3);
+							else if (timeDiff >= -0.085 && timeDiff <= 0.085)
+								addScore(note, 3, timeDiff > 0 ? "SLOW" : "FAST");
+							else if (timeDiff >= -0.12 && timeDiff <= 0.12)
+								addScore(note, 2, timeDiff > 0 ? "SLOW" : "FAST");
 						}
 						else if (touch.phase == 1) {
-							if (timeDiff >= 0.15)
-								addScore(note, 1);
-							else if (timeDiff >= 0.1)
-								addScore(note, 2);
+							if (timeDiff >= 0.12)
+								addScore(note, 1, "SLOW");
+							else if (timeDiff >= 0.085)
+								addScore(note, 2, "SLOW");
 							else if (timeDiff >= 0.05)
-								addScore(note, 3);
+								addScore(note, 3, "SLOW");
 							else if (timeDiff >= 0)
 								addScore(note, 4);
 						}
@@ -466,8 +511,8 @@ function mainLoop(t1) {
 			}
 			if (!playMode && note.time <= nowTime)
 				addScore(note, 4);
-			else if (note.time + 0.4 <= nowTime) 
-				addScore(note, 0);
+			else if (note.time + 0.17 <= nowTime) 
+				addScore(note, 0, "SLOW");
 		}
 	}
 	while (tailCursor < headCursor && notes[tailCursor + 1].processed)
@@ -681,6 +726,12 @@ $("#close_menu").on("click", function() {
 		// Still not sure the effects, only know that 1*V3 = -50% / 11 per miss & 2*V3 = -50% / 12 per miss
 		volSP = (~~$("#ssk0").val().split`V`[1] + ~~$("#ssk1").val().split`V`[1]) / 3;
 		ensSP = (~~$("#ssk0").val().split`E`[1] + ~~$("#ssk1").val().split`E`[1]) / 3;
+		perfectSP = ~~$("#ssk0").val().split`P`[1] + ~~$("#ssk1").val().split`P`[1];
+		comboSP1Lv = ~~$("#ssk0").val().split`C`[1];
+		comboSP2Lv = ~~$("#ssk1").val().split`C`[1];
+		comboSP1 = (comboSP1Lv >= 1) + (comboSP1Lv >= 4);
+		comboSP2 = (comboSP2Lv >= 1) + (comboSP2Lv >= 4);
+
 		$("#voltage_sp")[["show", "hide"][+!volSP]]();
 		$("#ensemble_sp").hide();
 		$("#menu").hide();
@@ -758,6 +809,12 @@ $("#fs").on("click", function() {
 chartDiffSelect.on("change", function() {
 	loadJudgmentLine(numLanes = this.value < 2 ? 7 : 9);
 });
+
+let enableFS = false;
+$("#fast_slow").on("change", function() {
+	enableFS = this.value == "1";
+});
+
 
 let playMode = true;
 $("#playmode").on("click", function() {
