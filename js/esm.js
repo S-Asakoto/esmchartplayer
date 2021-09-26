@@ -136,7 +136,7 @@ function signWithThreshold(value, threshold) {
 $("#touch_area").on("touchmove touchend touchcancel", function(e) {
 	if (!playMode)
 		return;
-    //e.preventDefault();
+    e.preventDefault();
 
 	for (let touch of e.changedTouches) {
 		console.log(touch.identifier, e.type);
