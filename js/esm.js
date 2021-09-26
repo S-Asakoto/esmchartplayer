@@ -339,6 +339,7 @@ function multiplier(x) {
 }
 
 function mainLoop(t1) {	
+	t1 ||= performance.now();
 	let nowTime = VideoSource.player.getCurrentTime() + offset;
 
 	let hasSkill = false;
@@ -546,8 +547,9 @@ function mainLoop(t1) {
         asTimeout = setTimeout(mainLoop, renderTime < 940 / 60 ? 1000 / 60 - renderTime : 1);
 
         if (fps[0]) 
-            fpsShow.text((1200 / (t1 - fps[fpsCursor])).toFixed(2) + ` FPS (Rendering time = ${renderTime} ms)`).show();
+            fpsShow.text((60000 / (t1 - fps[fpsCursor])).toFixed(2) + ` FPS (Rendering time = ${renderTime.toFixed(1)} ms); #Touches = ${Object.keys(touches).length}`).show();
         fps[fpsCursor] = t1;
+		fpsCursor = (fpsCursor + 1) % 50;
     }
     else {
         stopLoop(false);
@@ -756,6 +758,7 @@ $("#close_menu").on("click", function() {
 
 		$("#voltage_sp")[["show", "hide"][+!volSP]]();
 		$("#ensemble_sp").hide();
+		$("#judgment_sp").hide();
 		$("#menu").hide();
 		if (VideoSource) {
 			VideoSource.player.seekTo(0);
