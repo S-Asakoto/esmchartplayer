@@ -117,13 +117,22 @@ $("#board").on("touchstart", function(e) {
 	for (let touch of e.changedTouches) {
 		touches[touch.identifier] = {
 			x: touch.clientX,
+			y: touch.clientY,
+			_refX: touch.clientX,
+			_refY: touch.clientY,
 			oldLane: -1,
 			newLane: (Math.atan2((window.innerHeight / 2 - 40 * ruler) - touch.clientY, touch.clientX - window.innerWidth / 2) * 180 / Math.PI + 90) * (numLanes - 1) / 120,
-			flick: 0,
+			flickX: 0,
+			flickY: 0,
 			phase: 0
 		};
 	}
 });
+
+function signWithThreshold(value, threshold) {
+	if (Math.abs(value) < threshold) return 0;
+	return Math.sign(value);
+}
 
 $("#board").on("touchmove touchend touchcancel", function(e) {
 	if (!playMode)
@@ -131,10 +140,16 @@ $("#board").on("touchmove touchend touchcancel", function(e) {
         e.preventDefault();
 
 	for (let touch of e.changedTouches) {
+		let _oldFlickX = touches[touch.identifier].flickX,
+		    _oldFlickY = touches[touch.identifier].flickY,
 		touches[touch.identifier].oldLane = touches[touch.identifier].newLane;
 		touches[touch.identifier].newLane = (Math.atan2((window.innerHeight / 2 - 40 * ruler) - touch.clientY, touch.clientX - window.innerWidth / 2) * 180 / Math.PI + 90) * (numLanes - 1) / 120,
-		touches[touch.identifier].flick = Math.sign(touch.clientX - touches[touch.identifier].x);
+		touches[touch.identifier].flickX = signWithThreshold(touch.clientX - touches[touch.identifier]._refX, 2 * ruler), 
+		touches[touch.identifier].flickY = signWithThreshold(touch.clientY - touches[touch.identifier]._refY, 2 * ruler);
 		touches[touch.identifier].x = touch.clientX;
+		touches[touch.identifier].y = touch.clientY;
+		if (_oldFlickX != touches[touch.identifier].flickX) touches[touch.identifier]._refX = touches[touch.identifier].x;
+		if (_oldFlickY != touches[touch.identifier].flickY) touches[touch.identifier]._refY = touches[touch.identifier].y;
 		touches[touch.identifier].phase = 1 + (e.type != "touchmove");
 	}
 });
@@ -270,7 +285,7 @@ function addScore(note, judgment, fs) {
 		$("#judgment_sp").show();
 		judgmentSPTimeout = setTimeout(function() {
 			$("#judgment_sp").hide();
-		}, 1500);
+		}, 1000);
 	} 
 	$("#judgment_fs").attr("data-judge", judgmentFS);
 }
@@ -380,7 +395,7 @@ function mainLoop(t1) {
 					}
 				}
 				else {
-					if (note.type == 2 && isOnLaneFlick && note.flickDir == touch.flick) {
+					if (note.type == 2 && isOnLaneFlick && note.flickDir == touch.flickX) {
 						if (hasFlickOrTap)
 							continue;
 
