@@ -377,8 +377,8 @@ function mainLoop(t1) {
 						if (hasFlickOrTap)
 							continue;
 
-						if (note.follows == null) {
-							if (timeDiff >= -0.17 && timeDiff < -0.1)
+						if (note.follows == null && timeDiff < -0.1) {
+							if (timeDiff >= -0.17)
 								addScore(note, 3, "FAST");
 							else if (timeDiff >= -0.24)
 								addScore(note, 2, "FAST");
