@@ -113,7 +113,6 @@ $("#touch_area").on("touchstart", function(e) {
 	e.preventDefault();
 
 	for (let touch of e.changedTouches) {
-		console.log(touch.identifier, e.type, e.target.id);
 		touches[touch.identifier] = {
 			x: touch.clientX,
 			y: touch.clientY,
@@ -139,7 +138,6 @@ $("#touch_area").on("touchmove touchend touchcancel", function(e) {
     e.preventDefault();
 
 	for (let touch of e.changedTouches) {
-		console.log(touch.identifier, e.type);
 		let _oldFlickX = touches[touch.identifier].flickX,
 		    _oldFlickY = touches[touch.identifier].flickY;
 		touches[touch.identifier].oldLane = touches[touch.identifier].newLane;
@@ -150,7 +148,10 @@ $("#touch_area").on("touchmove touchend touchcancel", function(e) {
 		touches[touch.identifier].y = touch.clientY;
 		if (_oldFlickX != touches[touch.identifier].flickX) touches[touch.identifier]._refX = touches[touch.identifier].x;
 		if (_oldFlickY != touches[touch.identifier].flickY) touches[touch.identifier]._refY = touches[touch.identifier].y;
-		touches[touch.identifier].phase = 1 + (e.type != "touchmove");
+		if (touches[touch.identifier].phase == 0 && e.type != "touchmove")
+			touches[touch.identifier].phase = 3;
+		else
+			touches[touch.identifier].phase = 1 + (e.type != "touchmove");
 	}
 });
 
@@ -377,7 +378,7 @@ function mainLoop(t1) {
 				let timeDiff = nowTime - note.time;
 				let isOnLaneNormal = Math.abs(note.pos - touch.newLane) < 0.9, 
 					isOnLaneFlick = isOnLaneNormal || Math.abs(note.pos - touch.oldLane) < 0.9;
-				if (touch.phase == 0) {
+				if (touch.phase == 0 || touch.phase == 3) {
 					if (isOnLaneNormal) {
 						if (note.type == 0 || note.type == 3) {
 							if (hasFlickOrTap)
@@ -442,7 +443,7 @@ function mainLoop(t1) {
 			}
 		}
 		for (let i of Object.keys(touches)) {
-			if (touches[i].phase == 2)
+			if (touches[i].phase >= 2)
 				delete touches[i];
 			else if (touches[i].phase == 0)
 				touches[i].phase = 1;
