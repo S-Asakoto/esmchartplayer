@@ -144,6 +144,12 @@ const Globals = (function() {
 			"en": "Bottom",
 			"ja": "下"
 		},
+		FAST_SLOW: {
+			"zh-Hant": "FAST/SLOW顯示",
+			"zh-Hans": "FAST/SLOW显示",
+			"en": "FAST/SLOW Display",
+			"ja": "FAST/SLOW表示"
+		}, 
 		SHOW: {
 			"zh-Hant": "顯示",
 			"zh-Hans": "显示",
