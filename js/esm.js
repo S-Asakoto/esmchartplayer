@@ -377,7 +377,7 @@ function mainLoop(t1) {
 
 				let timeDiff = nowTime - note.time;
 				let isOnLaneNormal = Math.abs(note.pos - touch.newLane) < 0.9, 
-					isOnLaneFlick = isOnLaneNormal || Math.abs(note.pos - touch.oldLane) < 0.9;
+					isOnLaneFlick = Math.abs(note.pos - touch.newLane) < 0.6;
 				if (touch.phase == 0 || touch.phase == 3) {
 					if (isOnLaneNormal) {
 						if (note.type == 0 || note.type == 3) {
