@@ -1,5 +1,5 @@
 const checkRegex = /((\d+)#(\d+(\.\d+)?):(\d+(\.\d+)?):(\d+(\.\d+)?))|((=)?((((\d+)?:(\d+))?_(\d+))?(\+(\d+(\.\d+)?)\/(\d+(\.\d+)?)|(\.\d+))?|(\d+(\.\d+)?))?([!?~]|@([OSLR])?(-?[01234](\.\d+)?)))/gi;
-const levelRegex = /((EASY)|(NORMAL)|(HARD)|(EXPERT))_LEVEL_(30|[12][0-9]|0?[1-9])/i;
+const levelRegex = /((EASY)|(NORMAL)|(HARD)|(EXPERT)|(SPECIAL))_LEVEL_(30|[12][0-9]|0?[1-9])/i;
 const videoRegex = /v=([A-Za-z0-9-_]{11})/;
 const stopRegex = /stop=(\d+(\.\d+)?)/;
 
@@ -72,6 +72,7 @@ function showScore(score, difficulty) {
 		[0, 60000, 200000, 360000, 600000, 1800000],
 		[0, 60000, 200000, 360000, 600000, 1800000],
 		[0, 66000, 220000, 396000, 660000, 1960000],
+		[0, 72000, 240000, 432000, 720000, 2160000],
 		[0, 72000, 240000, 432000, 720000, 2160000]
 	][difficulty];
 	
@@ -146,8 +147,8 @@ $("#touch_area").on("touchmove touchend touchcancel", function(e) {
 		touches[touch.identifier].flickY = signWithThreshold(touch.clientY - touches[touch.identifier]._refY, 2 * ruler);
 		touches[touch.identifier].x = touch.clientX;
 		touches[touch.identifier].y = touch.clientY;
-		if (_oldFlickX != touches[touch.identifier].flickX) touches[touch.identifier]._refX = touches[touch.identifier].x;
-		if (_oldFlickY != touches[touch.identifier].flickY) touches[touch.identifier]._refY = touches[touch.identifier].y;
+		if (_oldFlickX != touches[touch.identifier].flickX && _oldFlickX != 0) touches[touch.identifier]._refX = touches[touch.identifier].x;
+		if (_oldFlickY != touches[touch.identifier].flickY && _oldFlickY != 0) touches[touch.identifier]._refY = touches[touch.identifier].y;
 		if (touches[touch.identifier].phase == 0 && e.type != "touchmove")
 			touches[touch.identifier].phase = 3;
 		else
@@ -782,8 +783,39 @@ $("#menu_btn").on("click", function() {
 $("#setting_yt").on("submit", function(e) {
 	e.preventDefault();
 	e.stopPropagation();
-	if (e.target.checkValidity())
-		VideoSource.loadYouTube($("#yt_videoid").val());
+	if (e.target.checkValidity()) {
+		VideoSource = YouTubeVideoSource;
+		VideoSource.loadSource($("#yt_videoid").val());
+		
+		$(".external-source").hide();
+		$("#yt").show();
+	}
+	return false;
+});
+
+$("#setting_local_video").on("submit", function(e) {
+	e.preventDefault();
+	e.stopPropagation();
+	if (e.target.checkValidity()) {
+		VideoSource = LocalVideoSource;
+		VideoSource.loadSource(URL.createObjectURL($("#local_video_path")[0].files[0]));
+		
+		$(".external-source").hide();
+		$("#local_video").show();
+	}
+	return false;
+});
+
+$("#setting_local_audio").on("submit", function(e) {
+	e.preventDefault();
+	e.stopPropagation();
+	if (e.target.checkValidity()) {
+		VideoSource = LocalAudioSource;
+		VideoSource.loadSource(URL.createObjectURL($("#local_audio_path")[0].files[0]));
+		
+		$(".external-source").hide();
+		$("#local_audio").show();
+	}
 	return false;
 });
 
@@ -874,16 +906,23 @@ $("#chart").on("change", function() {
 
 	let levelDefinition = levelRegex.exec(file);
 	if (levelDefinition) {
-		chartDiffSelect.val(levelDefinition[2] ? 0 : levelDefinition[3] ? 1 : levelDefinition[4] ? 2 : 3).trigger("change");
-		$("#chart_lvl").val(levelDefinition[6]).trigger("input");
+		chartDiffSelect.val(levelDefinition[2] ? 0 : levelDefinition[3] ? 1 : levelDefinition[4] ? 2 : levelDefinition[5] ? 3 : 4).trigger("change");
+		$("#chart_lvl").val(levelDefinition[7]).trigger("input");
 	}
 
 	let videoDefinition = videoRegex.exec(file);
 	if (videoDefinition) {
-		$("#yt_videoid").val(videoDefinition[1]).trigger("change");
-		if (VideoSource)
-			$("#setting_yt").trigger("submit");
+		if (VideoSource === YouTubeVideoSource) {
+			$("#yt_videoid").val(videoDefinition[1]).trigger("change");
+			if (VideoSource) 
+				$("#setting_" + $("#setting_src_type").val()).trigger("submit");
+		}
 	}
+});
+
+$("#setting_src_type").on("change", function() {
+	$(".setting-src-types").hide();
+	$("#setting_" + this.value).show();
 });
 
 $("*[data-storable]").each(function() {

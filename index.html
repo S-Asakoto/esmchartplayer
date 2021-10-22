@@ -63,6 +63,12 @@
 			</svg>
 		</template>
 		<div id="yt" class="external-source"></div>
+		<video id="local_video" class="external-source">
+			<source>
+		</video>
+		<audio id="local_audio" class="external-source">
+			<source>
+		</audio>
 		<div id="brightness_mask"></div>
 		<div id="board" draggable="false">
 			<div class="ui">
@@ -188,8 +194,21 @@
 					<div class="header" data-translate="VIDEO_SETTINGS">影片設定</div>
 					<div class="subtitle" data-translate="SOURCE">來源</div>
 					<div class="row-group">
-						<form id="setting_yt" class="row">
+						<select id="setting_src_type" data-storable>
+							<option value="yt">YouTube</option>
+							<option value="local_video" data-translate="LOCAL_VIDEO">本地影片</option>
+							<option value="local_audio" data-translate="LOCAL_AUDIO">本地音檔</option>
+						</select>
+						<form class="setting-src-types" id="setting_yt" class="row">
 							https://youtube.com/watch?v=<input type="text" id="yt_videoid" name="yt_videoid" maxlength="11" pattern="[0-9A-Za-z_-]{11}" required data-storable>
+							<button data-translate="LOAD">載入</button>
+						</form>
+						<form class="setting-src-types" id="setting_local_video" class="row">
+							<input type="file" id="local_video_path" name="local_video_path" required>
+							<button data-translate="LOAD">載入</button>
+						</form>
+						<form class="setting-src-types" id="setting_local_audio" class="row">
+							<input type="file" id="local_audio_path" name="local_audio_path" required>
 							<button data-translate="LOAD">載入</button>
 						</form>
 					</div>
@@ -395,6 +414,7 @@
 								<option value="1">Normal</option>
 								<option value="2">Hard</option>
 								<option value="3" selected>Expert</option>
+								<option value="4" selected>Special</option>
 							</select>
 							Lv. 1 <input type="range" min="1" max="30" step="1" value="24" class="settings" id="chart_lvl" data-storable> Lv. 30 <label class="range-value" data-value="chart_lvl" data-format="Lv. _"></label>
 						</div>

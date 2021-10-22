@@ -24,6 +24,18 @@ const Globals = (function() {
 			"en": "Source",
 			"ja": "ソース"
 		}, 
+		LOCAL_VIDEO: {
+			"zh-Hant": "本地影片",
+			"zh-Hans": "本地视频",
+			"en": "Local Video",
+			"ja": "ローカル動画"
+		}, 
+		LOCAL_AUDIO: {
+			"zh-Hant": "本地音檔",
+			"zh-Hans": "本地音档",
+			"en": "Local Audio",
+			"ja": "ローカル音源"
+		}, 
 		BRIGHTNESS: {
 			"zh-Hant": "亮度",
 			"zh-Hans": "亮度",
