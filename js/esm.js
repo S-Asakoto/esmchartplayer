@@ -1,4 +1,4 @@
-const checkRegex = /((\d+)#(\d+(\.\d+)?):(\d+(\.\d+)?):(\d+(\.\d+)?))|((=)?((((\d+)?:(\d+))?_(\d+))?(\+(\d+(\.\d+)?)\/(\d+(\.\d+)?)|(\.\d+))?|(\d+(\.\d+)?))?([!?~]|@([OSLR])?(-?[01234](\.\d+)?)))/gi;
+const checkRegex = /((\d+)#(\d+(\.\d+)?):(\d+(\.\d+)?):(\d+(\.\d+)?))|((=)?((((\d+)?:(\d+))?_(\d+))?(\+(\d+(\.\d+)?)\/(\d+(\.\d+)?)|(\.\d+))?|(\d+(\.\d+)?))?([!?~]|@([OSLR])?(-?[01234](\.\d+)?)|s(\d+(\.\d+)?)))/gi;
 const levelRegex = /((EASY)|(NORMAL)|(HARD)|(EXPERT)|(SPECIAL))_LEVEL_(30|[12][0-9]|0?[1-9])/i;
 const videoRegex = /v=([A-Za-z0-9-_]{11})/;
 const stopRegex = /stop=(\d+(\.\d+)?)/;
@@ -171,6 +171,12 @@ let stopTime = 0;
 let fps = Array(50).fill(0), fpsCursor = 0;
 let comboSP1 = 0, comboSP2 = 0, comboSP1Lv = 0, comboSP2Lv = 0, perfectSP = 0;
 
+let scrollChangeEnd = 0;
+let targetScrollSpeed = 1;
+let currentScrollSpeed = 1;
+let originalScrollSpeed = 1;
+let scrollSpeedMarkers = [];
+
 function bankerRound(v) {
 	let _v = Math.round(v);
 	if (v % 2 == 0.5) _v--;
@@ -337,12 +343,23 @@ function popNote(note) {
 }
 
 function multiplier(x) {
-	return 3 ** (x * hiSpeed / 5);
+	return 3 ** (x * hiSpeed * currentScrollSpeed / 5);
 }
 
 function mainLoop(t1) {	
 	t1 ||= performance.now();
 	let nowTime = VideoSource.player.getCurrentTime() + offset;
+
+	if (scrollSpeedMarkers.length > 0 && nowTime >= scrollSpeedMarkers[0][0]) {
+		let marker = scrollSpeedMarkers.shift();
+		scrollChangeEnd = marker[0] + 0.2;
+		originalScrollSpeed = targetScrollSpeed;
+		targetScrollSpeed = marker[1];
+	}
+	if (scrollChangeEnd >= nowTime)
+		currentScrollSpeed = targetScrollSpeed;
+	else
+		currentScrollSpeed = targetScrollSpeed + (originalScrollSpeed - targetScrollSpeed) * (scrollChangeEnd - nowTime) * 5;
 
 	let hasSkill = false;
 	for (let skill of skills) {
@@ -589,6 +606,11 @@ function readChart() {
 	totalSkills = 0;
 	totalEnsemble = 0;
 	let section = 1, bar = 0, beat = 0, time = 0, follow = [];
+	scrollSpeedMarkers = [];
+	originalScrollSpeed = 1;
+	currentScrollSpeed = 1;
+	targetScrollSpeed = 1;
+	scrollChangeEnd = -99999;
 
     checkRegex.exec("");
     levelRegex.exec("");
@@ -632,6 +654,11 @@ function readChart() {
 				if (ensembleEnd > -1)
 					throw `The ensemble time has ended in command ${match[0]}`;
 				ensembleEnd = time;
+			}
+			else if (match[29]) {
+				if (+match[29] == 0)
+					throw `Scroll speed cannot be 0`;
+				scrollSpeedMarkers.push([time, +match[29]]);
 			}
 			else {
 				let note = {
