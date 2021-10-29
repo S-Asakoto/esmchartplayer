@@ -356,11 +356,11 @@ function mainLoop(t1) {
 		originalScrollSpeed = targetScrollSpeed;
 		targetScrollSpeed = marker[1];
 	}
-	if (scrollChangeEnd >= nowTime)
+	if (nowTime >= scrollChangeEnd)
 		currentScrollSpeed = targetScrollSpeed;
 	else
 		currentScrollSpeed = targetScrollSpeed + (originalScrollSpeed - targetScrollSpeed) * (scrollChangeEnd - nowTime) * 5;
-
+	
 	let hasSkill = false;
 	for (let skill of skills) {
 		if (skill[2] > 0 && nowTime - skill[2] < skill[0])
@@ -374,7 +374,7 @@ function mainLoop(t1) {
 	else if (ensemble >= 0 && ensembleEnd > 0 && ensembleEnd <= nowTime)
 		endEnsembleTime(true);
 
-	while (headCursor + 1 < notes.length && notes[headCursor + 1].headTime - 5 / hiSpeed <= nowTime) {
+	while (headCursor + 1 < notes.length && notes[headCursor + 1].headTime - 5 / hiSpeed / currentScrollSpeed <= nowTime) {
 		headCursor++;
 		if (notes[headCursor].follows) {
 			let w = document.createElementNS("http://www.w3.org/2000/svg", 'path');
@@ -477,7 +477,7 @@ function mainLoop(t1) {
 				radius2 = radius * 10,
 				{angle1, angle2} = note.simulHint || {};
 
-			if (note.time - 5 / hiSpeed <= nowTime) {				
+			if (note.time - 5 / hiSpeed / currentScrollSpeed <= nowTime) {				
 				if (!note.noteElement) {
 					popNote(note);
 					if (note.simul) {
