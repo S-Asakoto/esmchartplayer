@@ -352,14 +352,14 @@ function mainLoop(t1) {
 
 	if (scrollSpeedMarkers.length > 0 && nowTime >= scrollSpeedMarkers[0][0]) {
 		let marker = scrollSpeedMarkers.shift();
-		scrollChangeEnd = marker[0] + 0.2;
+		scrollChangeEnd = marker[0] + 0.5;
 		originalScrollSpeed = targetScrollSpeed;
 		targetScrollSpeed = marker[1];
 	}
 	if (nowTime >= scrollChangeEnd)
 		currentScrollSpeed = targetScrollSpeed;
 	else
-		currentScrollSpeed = targetScrollSpeed + (originalScrollSpeed - targetScrollSpeed) * (scrollChangeEnd - nowTime) * 5;
+		currentScrollSpeed = targetScrollSpeed + (originalScrollSpeed - targetScrollSpeed) * (scrollChangeEnd - nowTime) * 2;
 	
 	let hasSkill = false;
 	for (let skill of skills) {
