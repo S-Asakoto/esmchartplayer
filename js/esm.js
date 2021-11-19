@@ -177,6 +177,13 @@ let currentScrollSpeed = 1;
 let originalScrollSpeed = 1;
 let scrollSpeedMarkers = [];
 
+let tapSE = $(".se-tap"), tapSECursor = 0, tapSELength = tapSE.length;
+let segmentSE = $(".se-segment"), segmentSECursor = 0, segmentSELength = segmentSE.length;
+let holdSE = $(".se-hold"), holdSECursor = 0, holdSELength = holdSE.length;
+let sppSE = $(".se-spp"), sppSECursor = 0, sppSELength = sppSE.length;
+let skillSE = $(".se-skill"), skillSECursor = 0, skillSELength = skillSE.length;
+let flickSE = $(".se-flick"), flickSECursor = 0, flickSELength = flickSE.length;
+
 function bankerRound(v) {
 	let _v = Math.round(v);
 	if (v % 2 == 0.5) _v--;
@@ -349,6 +356,9 @@ function multiplier(x) {
 function mainLoop(t1) {	
 	t1 ||= performance.now();
 	let nowTime = VideoSource.player.getCurrentTime() + offset;
+
+	let playTapSE = false, playHoldSE = false, playSegmentSE = false, 
+	    playSPPSE = false, playFlickSE = false, playSkillSE = false;
 
 	if (scrollSpeedMarkers.length > 0 && nowTime >= scrollSpeedMarkers[0][0]) {
 		let marker = scrollSpeedMarkers.shift();
@@ -551,14 +561,64 @@ function mainLoop(t1) {
 				note.holdSegmentElement.setAttribute("d", command1 + command2);
 				
 			}
-			if (!playMode && note.time <= nowTime)
+			if (!playMode && note.headTime <= nowTime && note.time > nowTime)
+				playHoldSE = true;
+			if (!playMode && note.time <= nowTime) {
 				addScore(note, 4);
+				if (note.type == 3)
+					playSPPSE = true;
+				else if (note.type == 2)
+					playFlickSE = true;
+				else if (note.type == 1)
+					playSegmentSE = true;
+				else if (note.type == 0) {
+					if (note.isSkill)
+						playSkillSE = true;
+					else
+						playTapSE = true;
+				}
+			}
 			else if (note.time + 0.17 <= nowTime) 
 				addScore(note, 0, "SLOW");
 		}
 	}
 	while (tailCursor < headCursor && notes[tailCursor + 1].processed)
 		tailCursor++;
+
+	if (playTapSE) {
+		let p = tapSE[tapSECursor = (tapSECursor + 1) % tapSELength];
+		p.currentTime = 0;
+		p.play();
+	}
+	if (playFlickSE) {
+		let p = flickSE[flickSECursor = (flickSECursor + 1) % flickSELength];
+		p.currentTime = 0;
+		p.play();
+	}
+	if (playSkillSE) {
+		let p = skillSE[skillSECursor = (skillSECursor + 1) % skillSELength];
+		p.currentTime = 0;
+		p.play();
+	}
+	if (playSegmentSE) {
+		let p = segmentSE[segmentSECursor = (segmentSECursor + 1) % segmentSELength];
+		p.currentTime = 0;
+		p.play();
+	}
+	if (playSPPSE) {
+		let p = sppSE[sppSECursor = (sppSECursor + 1) % sppSELength];
+		p.currentTime = 0;
+		p.play();
+	}
+	if (playHoldSE) {
+		let p = holdSE[holdSECursor = (holdSECursor + 1) % holdSELength];
+		if (p.paused || p.ended) {
+			p.currentTime = 0;
+			p.play();
+		}
+	}
+	else 
+		holdSE.each(function() {this.pause();});
 
     let renderTime = performance.now() - t1;
     if (stopTime > nowTime - offset) {
@@ -581,6 +641,7 @@ function stopLoop(manual) {
 	clearTimeout(asTimeout);
 	if (VideoSource)
 		VideoSource.player.stopVideo();
+	holdSE.each(function() {this.pause();});
 	fpsShow.hide();
 
 	if (!manual) {
