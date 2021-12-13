@@ -1,4 +1,4 @@
-const checkRegex = /((\d+)#(\d+(\.\d+)?):(\d+(\.\d+)?):(\d+(\.\d+)?))|((=)?((((\d+)?:(\d+))?_(\d+))?(\+(\d+(\.\d+)?)\/(\d+(\.\d+)?)|(\.\d+))?|(\d+(\.\d+)?))?([!?~]|@([OSLR])?(-?[01234](\.\d+)?)|s(\d+(\.\d+)?)))/gi;
+const checkRegex = /((\d+)#(\d+(\.\d+)?):(\d+(\.\d+)?):(\d+(\.\d+)?))|(([>=])?((((\d+)?:(\d+))?_(\d+))?(\+(\d+(\.\d+)?)\/(\d+(\.\d+)?)|(\.\d+))?|(\d+(\.\d+)?))?([!?~]|@([OSLR])?(-?\d+(\.\d+)?)(G(\d+))?))|G(\d+)/gi;
 const levelRegex = /((EASY)|(NORMAL)|(HARD)|(EXPERT)|(SPECIAL))_LEVEL_(30|[12][0-9]|0?[1-9])/i;
 const videoRegex = /v=([A-Za-z0-9-_]{11})/;
 const stopRegex = /stop=(\d+(\.\d+)?)/;
@@ -156,7 +156,7 @@ $("#touch_area").on("touchmove touchend touchcancel", function(e) {
 	}
 });
 
-let bpmTimings = {}, notes = [], ensembleStart = -1, ensembleNote = -1, ensembleEnd = -1;
+let bpmTimings = {}, notes = [], ensembleStart = -1, ensembleNote = -1, ensembleEnd = -1, tracks = {};
 let totalCombo = 0, totalCount = 0, totalSkills = 0, totalEnsemble = 0;
 let headCursor = -1, tailCursor = -1;
 let marks = [];
@@ -195,10 +195,12 @@ function addScore(note, judgment, fs) {
 	note.processed = true;
 	note.noteElement.remove();
 	note.noteElement = null;
-	if (note.simul && note.simulHintElement) {
-		note.simulHintElement.remove();
-		note.simulHintElement = null;
-		note.simul.simulHintElement = null;
+	if (note.simul && note.simul.length > 1) {
+		for (let i of note.simul) {
+			if (i.simulHintElement)
+				i.simulHintElement.remove();
+			i.simulHintElement = null;
+		}
 	}
 	if (note.holdSegmentElement) {
 		note.holdSegmentElement.remove();
@@ -357,19 +359,20 @@ function mainLoop(t1) {
 	t1 ||= performance.now();
 	let nowTime = VideoSource.player.getCurrentTime() + offset;
 
+	let trackTime = {};
+	for (let trackID in tracks) {
+		let track = tracks[trackID];
+		trackTime[trackID] = nowTime;
+		for (let j = 0; j < track.length; j++) {
+			if (nowTime >= track[j].start) {
+				let length = Math.min(nowTime, j < track.length - 1 ? track[j + 1].start : Infinity) - track[j].start;
+				trackTime[trackID] += length * (track[j].speed - 1);
+			}
+		}
+	}
+
 	let playTapSE = false, playHoldSE = false, playSegmentSE = false, 
 	    playSPPSE = false, playFlickSE = false, playSkillSE = false;
-
-	if (scrollSpeedMarkers.length > 0 && nowTime >= scrollSpeedMarkers[0][0]) {
-		let marker = scrollSpeedMarkers.shift();
-		scrollChangeEnd = marker[0] + 0.5;
-		originalScrollSpeed = targetScrollSpeed;
-		targetScrollSpeed = marker[1];
-	}
-	if (nowTime >= scrollChangeEnd)
-		currentScrollSpeed = targetScrollSpeed;
-	else
-		currentScrollSpeed = targetScrollSpeed + (originalScrollSpeed - targetScrollSpeed) * (scrollChangeEnd - nowTime) * 2;
 	
 	let hasSkill = false;
 	for (let skill of skills) {
@@ -384,7 +387,7 @@ function mainLoop(t1) {
 	else if (ensemble >= 0 && ensembleEnd > 0 && ensembleEnd <= nowTime)
 		endEnsembleTime(true);
 
-	while (headCursor + 1 < notes.length && notes[headCursor + 1].headTime - 5 / hiSpeed / currentScrollSpeed <= nowTime) {
+	while (headCursor + 1 < notes.length && notes[headCursor + 1].headScrollTime - 5 / hiSpeed <= trackTime[notes[headCursor + 1].group]) {
 		headCursor++;
 		if (notes[headCursor].follows) {
 			let w = document.createElementNS("http://www.w3.org/2000/svg", 'path');
@@ -480,26 +483,28 @@ function mainLoop(t1) {
 
 	for (let i = headCursor; i > tailCursor; i--) {
 		let note = notes[i];
+		
 		if (!note.processed) {
-			let m = multiplier(nowTime - note.time);
+			let tempSimul = note.simul ? note.simul.filter(x => !x.processed).map(x => x.pos) : [];
+			let m = multiplier(trackTime[note.group] - note.scrollTime);
 			let angle = (270 + 120 * note.pos / (numLanes - 1)) * Math.PI / 180;
 			let radius = 9.5 + 70.5 * (m - 1/3) * 1.5,
 				radius2 = radius * 10,
-				{angle1, angle2} = note.simulHint || {};
+				angle1 = (270 + 120 * Math.max(...tempSimul) / (numLanes - 1)) * Math.PI / 180,
+				angle2 = (270 + 120 * Math.min(...tempSimul) / (numLanes - 1)) * Math.PI / 180;
 
-			if (note.time - 5 / hiSpeed / currentScrollSpeed <= nowTime) {				
+			console.log(angle1, angle2);
+
+			if (note.scrollTime - 5 / hiSpeed <= trackTime[note.group]) {				
 				if (!note.noteElement) {
 					popNote(note);
-					if (note.simul) {
-						if (note.simul.simulHintElement)
-							simulHints.prepend(note.simulHintElement = note.simul.simulHintElement);
-						else {
-							let w = document.createElementNS("http://www.w3.org/2000/svg", 'path');
-							w.setAttribute("stroke", "#fff");
-							w.setAttribute("stroke-width", "8");
-							w.setAttribute("fill", "#fff0");
-							note.simulHintElement = w;
-						}
+					if (tempSimul.length > 1 && !note.simulHintElement) {
+						let w = document.createElementNS("http://www.w3.org/2000/svg", 'path');
+						w.setAttribute("stroke", "#fff");
+						w.setAttribute("stroke-width", "8");
+						w.setAttribute("fill", "#fff0");
+						note.simulHintElement = w;
+						simulHints.prepend(w);
 					}
 				}
 				note.noteElement.style.setProperty("--multiplier", m);
@@ -517,7 +522,7 @@ function mainLoop(t1) {
 			if (note.follows) {
 				let command1 = "", command2 = "", l = note.followPath.length;
 				let params = note.followPath.map(function([t, p]) {
-					let m = multiplier(nowTime - t),
+					let m = multiplier(trackTime[note.group] - t),
 						d = 95 + 705 * (m - 1/3) * 1.5,
 						r = 56 * noteSize * m,
 						a = (270 + 120 * p / (numLanes - 1)) * Math.PI / 180,
@@ -658,6 +663,7 @@ function readChart() {
 
 	let file = $("#chart").val().replace(levelRegex, "").replace(videoRegex, "").replace(stopRegex, (_, a) => (stopTime = +a) || "");
 	bpmTimings = {};
+	tracks = {"0": []};
 	notes = [];
 	ensembleStart = -1;
 	ensembleNote = -1;
@@ -667,18 +673,16 @@ function readChart() {
 	totalSkills = 0;
 	totalEnsemble = 0;
 	let section = 1, bar = 0, beat = 0, time = 0, follow = [];
-	scrollSpeedMarkers = [];
-	originalScrollSpeed = 1;
-	currentScrollSpeed = 1;
-	targetScrollSpeed = 1;
-	scrollChangeEnd = -99999;
 
-    checkRegex.exec("");
-    levelRegex.exec("");
-    videoRegex.exec("");
-    stopRegex.exec("");
+	let tracking = 0;
 
-	for (let match of file.matchAll(checkRegex)) {
+	checkRegex.exec("");
+	levelRegex.exec("");
+	videoRegex.exec("");
+	stopRegex.exec("");
+
+	let match = null;
+	while (match = checkRegex.exec(file)) {
 		if (match[1]) {
 			if (+match[7] == 0)
 				throw `BPM cannot be 0 in command ${match[0]}`;
@@ -688,8 +692,12 @@ function readChart() {
 				bpm: +match[7]
 			};
 		}
+		else if (match[31]) {
+			if (!tracks[tracking = +match[31]])
+				tracks[tracking] = [];
+		}
 		else {
-			let isFollow = !!match[10];
+			let isFollow = match[10] == "=";
 
 			if (match[11]) {
 				if (match[24])
@@ -716,11 +724,8 @@ function readChart() {
 					throw `The ensemble time has ended in command ${match[0]}`;
 				ensembleEnd = time;
 			}
-			else if (match[29]) {
-				if (+match[29] == 0)
-					throw `Scroll speed cannot be 0`;
-				scrollSpeedMarkers.push([time, +match[29]]);
-			}
+			else if (match[10] == ">")
+				tracks[tracking].push({start: time, speed: +match[27]});
 			else {
 				let note = {
 					time, 
@@ -732,27 +737,25 @@ function readChart() {
 					flickDir: ("L.R".indexOf(match[26]) - 1) % 2,
 					follows: null,
 					followPath: [],
+					group: +match[30] || 0,
 					addEnsemble: false,
 					processed: false,
 					simul: null,
-					simulHint: null,
-					simulHintElement: null,
-					noteElement: null,
-					holdSegmentElement: null					
+					simulHint: null                
 				};
 
 				if (isFollow) {
 					note.follows = notes[totalCombo - 1];
 
-                    let followEnd = follow[follow.length - 1];
-                    
-                    if (followEnd[1] == note.pos)
-                        follow.push([note.time, note.pos]);
-                    else {
-                        let count = Math.abs(note.pos - followEnd[1]) * 4;
-                        for (let i = 1, p = followEnd[1]; i <= count; i++)
-                            follow.push([followEnd[0] + (note.time - followEnd[0]) * i / count, p += note.pos < followEnd[1] ? -0.25 : 0.25]);
-                    }
+					let followEnd = follow[follow.length - 1];
+					
+					if (followEnd[1] == note.pos)
+						follow.push([note.time, note.pos]);
+					else {
+						let count = Math.abs(note.pos - followEnd[1]) * 4;
+						for (let i = 1, p = followEnd[1]; i <= count; i++)
+							follow.push([followEnd[0] + (note.time - followEnd[0]) * i / count, p += note.pos < followEnd[1] ? -0.25 : 0.25]);
+					}
 					
 					note.followPath = follow;
 					note.headTime = follow[0][0];
@@ -799,18 +802,45 @@ function readChart() {
 	if (ensembleStart > ensembleNote || ensembleNote > ensembleEnd)
 		throw "Malformed Ensemble time";
 
-	notes.sort((a, b) => a.time - b.time).map(function (_, i) {
-		if (i > 0 && notes[i].time == notes[i - 1].time && notes[i].type != 1 && notes[i - 1].type != 1) {
-			notes[i].simul = notes[i - 1];
-			notes[i - 1].simul = notes[i];
-			
-			notes[i].simulHint = notes[i - 1].simulHint = {
-				angle1: (270 + 120 * Math.max(notes[i].pos, notes[i - 1].pos) / (numLanes - 1)) * Math.PI / 180,
-				angle2: (270 + 120 * Math.min(notes[i].pos, notes[i - 1].pos) / (numLanes - 1)) * Math.PI / 180
-			};
+	notes.forEach(function(note) {
+		note.scrollTime = note.time;
+		note.headScrollTime = note.headTime;
+		let track = tracks[note.group];
+		for (let j = 0; j < track.length; j++) {
+			if (note.time >= track[j].start) {
+				let length = Math.min(note.time, j < track.length - 1 ? track[j + 1].start : Infinity) - track[j].start;
+				note.scrollTime += length * (track[j].speed - 1);
+			}
+			if (note.headTime >= track[j].start) {
+				let length = Math.min(note.headTime, j < track.length - 1 ? track[j + 1].start : Infinity) - track[j].start;
+				note.headScrollTime += length * (track[j].speed - 1);
+			}
+		}
+		
+		for (let k = 0; k < note.followPath.length; k++) {
+			let fTime = note.followPath[k][0];
+			for (let j = 0; j < track.length; j++) {
+				if (note.followPath[k][0] >= track[j].start) {
+					let length = Math.min(note.followPath[k][0], j < track.length - 1 ? track[j + 1].start : Infinity) - track[j].start;
+					fTime += length * (track[j].speed - 1);
+				}
+			}
+			note.followPath[k][0] = fTime;
 		}
 	});
-	notes.sort((a, b) => a.headTime - b.headTime);
+
+	console.log('tracks', tracks, '; notes', notes);
+
+	notes.sort((a, b) => a.time - b.time || a.group - b.group).map(function (_, i) {
+		if (i > 0 && notes[i].time == notes[i - 1].time && notes[i].type != 1 && notes[i - 1].type != 1) {
+			if (!notes[i - 1].simul)
+				notes[i - 1].simul = [notes[i - 1], notes[i]];
+			else 
+				notes[i - 1].simul.push(notes[i]);
+			notes[i].simul = notes[i - 1].simul;
+		}
+	});
+	notes.sort((a, b) => a.headScrollTime - b.headScrollTime);
 	for (let note of notes) {
 		if (note.time >= ensembleNote && note.time < ensembleEnd && note.type != 3)
 			throw "No note can appear during the Ensemble appeal";
