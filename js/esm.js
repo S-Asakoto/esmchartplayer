@@ -1,5 +1,5 @@
 const checkRegex = /((\d+)#(\d+(\.\d+)?):(\d+(\.\d+)?):(\d+(\.\d+)?))|(([>=])?((((\d+)?:(\d+))?_(\d+))?(\+(\d+(\.\d+)?)\/(\d+(\.\d+)?)|(\.\d+))?|(\d+(\.\d+)?))?([!?~]|@([OSLR])?(-?\d+(\.\d+)?)(G(\d+))?))|G(\d+)/gi;
-const levelRegex = /((EASY)|(NORMAL)|(HARD)|(EXPERT)|(SPECIAL))_LEVEL_(30|[12][0-9]|0?[1-9])/i;
+const levelRegex = /((EASY)|(NORMAL)|(HARD)|(EXPERT)|(SPECIAL))_LEVEL_(30|[12][0-9]|0?[1-9])([+]?)/i;
 const videoRegex = /v=([A-Za-z0-9-_]{11})/;
 const stopRegex = /stop=(\d+(\.\d+)?)/;
 
@@ -962,13 +962,22 @@ $("#hi_speed").on("input", function() {
 	hiSpeed = +this.value;
 });
 
+$("#chart_lvl").on("input", function(e) {
+	if (+e.target.value < 26)
+		e.target.value = Math.floor(e.target.value);
+});
+
 $("input[type=range]").on("input", function(e) {
 	let a = $(`.range-value[data-value=${e.target.id}]`)[0];
 	let separator = a.dataset.separator || "";
 	let value = a.dataset.fixed 
 				? (+e.target.value).toFixed(a.dataset.fixed).replace(/\d+?(?=(\d{3})+[^\d])/g, `$&${separator}`)
 				: e.target.value.replace(/(\d)(\d{2})(?=\d(\d{3})*(\.|$))/g, `$1${separator}$2`);
-	a.innerHTML = a.dataset.format.replace("_", value);
+	a.innerHTML = a.dataset.format.replace(/_([+]?)/, function(_, formatCode) {
+		if (formatCode == "+")
+			if (value % 1) return Math.floor(value) + "+";
+		return value;
+	});
 });
 
 $("#fs").on("click", function() {
@@ -1025,7 +1034,9 @@ $("#chart").on("change", function() {
 	let levelDefinition = levelRegex.exec(file);
 	if (levelDefinition) {
 		chartDiffSelect.val(levelDefinition[2] ? 0 : levelDefinition[3] ? 1 : levelDefinition[4] ? 2 : levelDefinition[5] ? 3 : 4).trigger("change");
-		$("#chart_lvl").val(levelDefinition[7]).trigger("input");
+		var lvl = +levelDefinition[7];
+		if (lvl >= 26 && levelDefinition[8]) lvl += 0.5;
+		$("#chart_lvl").val(lvl).trigger("input");
 	}
 
 	let videoDefinition = videoRegex.exec(file);
