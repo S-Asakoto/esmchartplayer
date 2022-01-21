@@ -387,9 +387,10 @@ function mainLoop(t1) {
 	else if (ensemble >= 0 && ensembleEnd > 0 && ensembleEnd <= nowTime)
 		endEnsembleTime(true);
 
-	while (headCursor + 1 < notes.length && notes[headCursor + 1].headScrollTime - 5 / hiSpeed <= trackTime[notes[headCursor + 1].group]) {
-		headCursor++;
-		if (notes[headCursor].follows) {
+	for (let headCursor = 0; headCursor < notes.length; headCursor++) {
+		if (notes[headCursor].headScrollTime - 5 / hiSpeed <= trackTime[notes[headCursor].group]
+			&& notes[headCursor].follows
+			&& !notes[headCursor].holdSegmentElement) {
 			let w = document.createElementNS("http://www.w3.org/2000/svg", 'path');
 			w.setAttribute("fill", "#fff9");
 			w.setAttribute("stroke-width", 2, "#fff");
@@ -401,7 +402,7 @@ function mainLoop(t1) {
 		for (let x in touches) {
 			let touch = touches[x];
 			let hasFlickOrTap = false;
-			for (let i = tailCursor + 1; i <= headCursor; i++) {
+			for (let i = 0; i < notes.length; i++) {
 				let note = notes[i];
 				if (note.processed)
 					continue;
@@ -481,7 +482,7 @@ function mainLoop(t1) {
 		}
 	}
 
-	for (let i = headCursor; i > tailCursor; i--) {
+	for (let i = notes.length - 1; i >= 0; i--) {
 		let note = notes[i];
 		
 		if (!note.processed) {
@@ -492,8 +493,6 @@ function mainLoop(t1) {
 				radius2 = radius * 10,
 				angle1 = (270 + 120 * Math.max(...tempSimul) / (numLanes - 1)) * Math.PI / 180,
 				angle2 = (270 + 120 * Math.min(...tempSimul) / (numLanes - 1)) * Math.PI / 180;
-
-			console.log(angle1, angle2);
 
 			if (note.scrollTime - 5 / hiSpeed <= trackTime[note.group]) {				
 				if (!note.noteElement) {
@@ -511,6 +510,16 @@ function mainLoop(t1) {
 				note.noteElement.style.top = `calc(50% - ${40 + radius * Math.sin(angle)} * var(--ruler))`;
 				note.noteElement.style.left = `calc(50% + ${radius * Math.cos(angle)} * var(--ruler))`;
 			}
+		    else if (note.noteElement) {
+				note.noteElement.remove();
+				if (note.simulHintElement)
+					note.simulHintElement.remove();
+				if (note.holdSegmentElement)
+					note.holdSegmentElement.remove();
+				note.noteElement = null;
+				note.simulHintElement = null;
+				note.holdSegmentElement = null;
+			}
 			
 			if (note.simulHintElement) {
 				note.simulHintElement.setAttribute(
@@ -519,7 +528,7 @@ function mainLoop(t1) {
 				);
 			}
 			
-			if (note.follows) {
+			if (note.follows && note.holdSegmentElement) {
 				let command1 = "", command2 = "", l = note.followPath.length;
 				let params = note.followPath.map(function([t, p]) {
 					let m = multiplier(trackTime[note.group] - t),
@@ -587,8 +596,8 @@ function mainLoop(t1) {
 				addScore(note, 0, "SLOW");
 		}
 	}
-	while (tailCursor < headCursor && notes[tailCursor + 1].processed)
-		tailCursor++;
+//	while (tailCursor < headCursor && notes[tailCursor + 1].processed)
+//		tailCursor++;
 
 	if (playTapSE) {
 		let p = tapSE[tapSECursor = (tapSECursor + 1) % tapSELength];
