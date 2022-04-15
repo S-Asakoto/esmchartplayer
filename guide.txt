@@ -191,27 +191,27 @@ There must be no notes between the Ensemble Note and the Ensemble end marker.
 Example:
 
     G0>1:86_3+99/100@1151.0
-    >:87_0+0/4@-6.666667
-    >:87_1+2/4@1.0
+       >:87_0+0/4@-6.666667
+       >:87_1+2/4@1.0
 
     G1>1:86_1+49/100@1176.0
-    >:86_1+2/4@0.0
-    >:86_3+49/100@-975.0
-    >:86_3+1/2@1.0
-    >:86_3+99/100@1151.0
-    >:87_0+0/4@-6.666667
-    >:87_1+2/4@1.0
+       >:86_1+2/4@0.0
+       >:86_3+49/100@-975.0
+       >:86_3+1/2@1.0
+       >:86_3+99/100@1151.0
+       >:87_0+0/4@-6.666667
+       >:87_1+2/4@1.0
 
     G2>1:86_1+49/100@1276.0
-    >:86_1+2/4@0.0
-    >:86_3+49/100@-1075.0
-    >:86_3+1/2@1.0
-    >:86_3+99/100@1151.0
-    >:87_0+0/4@-6.666667
-    >:87_1+2/4@1.0
+       >:86_1+2/4@0.0
+       >:86_3+49/100@-1075.0
+       >:86_3+1/2@1.0
+       >:86_3+99/100@1151.0
+       >:87_0+0/4@-6.666667
+       >:87_1+2/4@1.0
 
 2. PREFER omitting unnecessary time notation components.
-3. PREFER and align the markers on the same vertical line.
+3. PREFER aligning the markers on the same vertical line.
    Beware though, time notation components MUST NOT be separated in between.
 
 Example:
