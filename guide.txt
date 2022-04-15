@@ -153,7 +153,7 @@ Example (time notation omitted, and official lane notation (19-lane notation) is
     @S-3               // a skill note at the 3rd lane left from center lane (lane 3)
     @L1.5              // a left flick between the 1st and 2nd lane right from center lane (lane 12)
     @R4                // a right flick at the rightmost lane (lane 17)
-    @O-4G1             // a tap note at the leftmost lane (lane 0) in Group 1
+    @O-4G1             // a tap note at the leftmost lane (lane 1) in Group 1
 
 There can only be at most 5 skill notes in a chart.
     
