@@ -247,10 +247,10 @@ const Globals = (function() {
 			"ja": "譜面難易度"
 		}, 
 		CHART_CONTENT: {
-			"zh-Hant": "譜面內容",
-			"zh-Hans": "谱面内容",
-			"en": "Chart Content",
-			"ja": "譜面內容"
+			"zh-Hant": "譜面內容 <a href='guide.txt' target='_blank'>譜面格式指引</a>",
+			"zh-Hans": "谱面内容 <a href='guide.txt' target='_blank'>谱面格式指引</a>",
+			"en": "Chart Content <a href='guide.txt' target='_blank'>Chart Format Guide</a>",
+			"ja": "譜面內容 <a href='guide.txt' target='_blank'>譜面フォーマットガード</a>"
 		}, 
 		_: {
 			"zh-Hant": "",

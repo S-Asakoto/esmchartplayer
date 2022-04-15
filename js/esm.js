@@ -1,5 +1,5 @@
 const checkRegex = /((\d+)#(\d+(\.\d+)?):(\d+(\.\d+)?):(\d+(\.\d+)?))|(([>=])?((((\d+)?:(\d+))?_(\d+))?(\+(\d+(\.\d+)?)\/(\d+(\.\d+)?)|(\.\d+))?|(\d+(\.\d+)?))?([!?~]|@([OSLR])?(-?\d+(\.\d+)?)(G(\d+))?))|G(\d+)/gi;
-const levelRegex = /((EASY)|(NORMAL)|(HARD)|(EXPERT)|(SPECIAL))_LEVEL_(30|[12][0-9]|0?[1-9])([+]?)/i;
+const levelRegex = /((EASY)|(NORMAL)|(HARD)|(EXPERT)|(SPECIAL))_LEVEL_(3[01]|[12][0-9]|0?[1-9])([+]?)/i;
 const videoRegex = /v=([A-Za-z0-9-_]{11})/;
 const stopRegex = /stop=(\d+(\.\d+)?)/;
 
@@ -709,8 +709,8 @@ function readChart() {
 			let isFollow = match[10] == "=";
 
 			if (match[11]) {
-				if (match[24])
-					time = +match[24];
+				if (match[23])
+					time = +match[23];
 				else {
 					section = +(match[14] || section);
 					bar = +(match[15] || bar);
@@ -736,6 +736,7 @@ function readChart() {
 			else if (match[10] == ">")
 				tracks[tracking].push({start: time, speed: +match[27]});
 			else {
+				let group = +match[30] || 0;
 				let note = {
 					time, 
 					headTime: time,
@@ -746,12 +747,13 @@ function readChart() {
 					flickDir: ("L.R".indexOf(match[26]) - 1) % 2,
 					follows: null,
 					followPath: [],
-					group: +match[30] || 0,
+					group,
 					addEnsemble: false,
 					processed: false,
 					simul: null,
 					simulHint: null                
 				};
+				if (!tracks[group]) tracks[group] = [];
 
 				if (isFollow) {
 					note.follows = notes[totalCombo - 1];

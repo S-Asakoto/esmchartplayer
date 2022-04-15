@@ -1,0 +1,243 @@
+============================
+| Chart Format Guide       |
+============================
+
+
+| CHART DIFFICULTY
+****************************
+
+The first line indicates the difficulty and level of the chart:
+
+    [difficulty]_LEVEL_[level]
+
+where [difficulty] is one of { EASY | NORMAL | HARD | EXPERT | SPECIAL },
+and [level] is a number between 1 and 31, optionally with a + sign at the end.
+
+Example:
+
+    EXPERT_LEVEL_28+
+
+indicates that this chart is an Expert chart, rated Level 28+ (or internally 28.5).
+
+
+| BPM SECTIONS
+****************************
+
+Then, we can define BPM sections as follows:
+
+    [sectionNo]#[sectionOffset]:[beatsPerBar]:[bpm]
+
+where [sectionNo] shall be numbered from 1,
+and [sectionOffset] shall be from the start of the song, in seconds.
+
+Example:
+
+    1#0.500:4:120
+    2#12.500:4:180
+
+indicates a segment #1 of 4/4 at BPM 120, starting at 0.500s,
+then a segment #2 of 4/4 at BPM 180, starting at 12.500s, exactly 6 bars after #1.
+
+
+| SCROLL SPEED CHANGES
+****************************
+
+Next, if necessary, we can define scroll speed changes as follows:
+
+    (G[groupNo])>[timeNotation]@[scrollSpeed]
+
+where [groupNo] is the note group number (all notes are Group 0 by default),
+[timeNotation] is the timing of the change, in the format described below,
+[scrollSpeed] is the scroll speed multiplier compared to original speed (negative values allowed).
+
+There can be more than 1 group of {>[timeNotation]@[scrollSpeed]} for each group.
+Without the (G[groupNo]), you can continue defining more changes for the same group.
+For all groups, the default speed is 1.0x.
+
+Example:
+
+    G0>1:12_0+0/4@0.5
+        >16_0+0/4@-1.0
+        >20_0+0/4@1.0
+
+indicates a speed change for Group 0 at Section 1 Bar 12 Beat 0.0 from 1.0x to 0.5x (slows down),
+then a speed change for the same group at Section 1 Bar 16 Beat 0.0 from 0.5x to -0.5x (retrograde motion),
+then a speed change for the same group at Section 1 Bar 20 Beat 0.0 from -0.5x to 1.0x (back to normal).
+
+
+| SOURCE CONTROL
+****************************
+
+Use this to auto-load the YouTube video source:
+
+    v=[youtubeVideoID]
+
+where [youtubeVideoID] is the 11-character ID for the video (https://youtube.com/watch?v=XXXXXXXXXXX).
+
+Example:
+
+    v=kZtovaaG7bc
+
+points to the official MV for =EYE= by Double Face.
+
+You should also marks the end of the video/audio with 
+
+    stop=[stoppingTime]
+
+at the end of the video, where [stoppingTime] denotes the ending time in seconds.
+
+Example:
+
+    stop=137.881
+
+denotes the video should stop at 137.881s (which is the length of the video above).
+
+
+| TIME NOTATION
+****************************
+
+For both notes and speed changes, the following notation is used to mark the timing:
+
+    (Second notation) [timeInSeconds]
+    (Bar-beat notation (decimal)) ((([bpmSection]):[bar])_[beat]).[subBeat]
+    (Bar-beat notation (fraction)) ((([bpmSection]):[bar])_[beat])+[subBeat]
+
+where in second notation, [timeInSeconds] denotes the absolute time in seconds,
+and in bar-beat notations, [bpmSection] is the section number defined in the BPM part,
+[bar] denotes the bar count within this section, starting from 0 (the first bar will be Bar 0),
+and [beat] dentoes the beat count within this bar, starting from 0 (the first beat will be Beat 0).
+
+It is allowed to omit the front components (with the separator) if these components are exactly
+the same with the previous time notation.
+However, if a component is different, you must write out all components from that component,
+even if they are the same.
+
+It is also allowed for fraction bar-beat notation to write fractions having a numerator larger than
+the denominator. This is convenient when writing long holds, because you can use the same beat 
+for another note having the same timestamp with the hold head, only needing to write the subdivision.
+
+Example:
+
+    12.450             // Second notation - 12.450s
+    1:23_0.0           // Bar-beat notation (decimal) - Section 1, Bar 23, Beat 0.0
+     :24_0.0           // Bar-beat notation (decimal) - (Section 1), Bar 24, Beat 0.0
+        _1.0           // Bar-beat notation (decimal) - (Section 1, Bar 24), Beat 1.0
+          .25          // Bar-beat notation (decimal) - (Section 1, Bar 24, Beat 1).25
+     :25_0+0/4         // Bar-beat notation (fraction) - (Section 1), Bar 25, Beat 0 +0/4
+        _1+0/4         // Bar-beat notation (fraction) - (Section 1, Bar 25), Beat 1 +0/4
+          +2/4         // Bar-beat notation (fraction) - (Section 1, Bar 25, Beat 1) +2/4
+          +4/4         // Bar-beat notation (fraction) - (Section 1, Bar 25, Beat 1) +4/4
+                       // representing Beat 2 +0/4
+
+
+| NOTES
+****************************
+
+Except for some notes, the format of a note is as follows:
+
+    ([timeNotation])@[noteType][position](G[groupNo])
+
+where [timeNotation] denotes the timing of the note in the format described above,
+[noteType] is one of "O"(tap), "S"(skill), "L"(left flick), "R"(right flick)
+(sorry, up and down flicks are not supported by now, but will be added soon),
+[position] is the position of the note (with the center lane labelled 0, then -1, -2, ... to the left,
+and 1, 2, ... to the right. x.5 is supported, indicating a note between two lanes),
+and [groupNo] indicates the group number of the note.
+
+Omitting time notation part indicates the current note has the same timing as the previous note,
+and omitting the G[groupNo] part indicates the note defaults to Group 0.
+
+Example (time notation omitted, and official lane notation (19-lane notation) is added in comments):
+    
+    @O0                // a tap note at the center lane (lane 9)
+    @S-3               // a skill note at the 3rd lane left from center lane (lane 3)
+    @L1.5              // a left flick between the 1st and 2nd lane right from center lane (lane 12)
+    @R4                // a right flick at the rightmost lane (lane 17)
+    @O-4G1             // a tap note at the leftmost lane (lane 0) in Group 1
+
+There can only be at most 5 skill notes in a chart.
+    
+For holds, hold heads share the same notation with ordinary notes (so you can also use skill notes here),
+and knots are marked with a "=" in front of a tap (or flick) note (in front of the timestamp if necessary).
+
+Example:
+
+    1:0_0+0/4@O2       // a hold starting from the 2nd lane right from center (lane 13)
+        =+2/4@O4       // and ending at the rightmost lane (lane 17)
+
+For turns without judgments, remove the "O" inside the notation for a note.
+You must end a hold with a knot, however.
+
+Example:
+
+    1:0_0+0/4@O2       // a hold starting from the 2nd lane right from center (lane 13)
+        =+2/4@4        // passing the rightmost lane (lane 17) without judgment
+        =+4/4@O2       // and ending at the 2nd lane right from center (lane 13)
+
+Knots and turns must be written in ascending order of their timestamps.
+You must not let a knot/turn follow the previous note from the front.
+
+For Ensemble Note, use "!" in place of {@[noteType][position]}.
+Before the Ensemble Note, there must be a Ensemble start marker, marked with "?" in place of {@[noteType][position]}.
+After the Ensemble Note, there must be a Ensemble end marker, marked with "~" in place of {@[noteType][position]}.
+There must be no notes between the Ensemble Note and the Ensemble end marker.
+
+
+| STYLE RECOMMENDATIONS
+****************************
+
+1. PREFER writing speed changes one per line, and leave an empty line between sections
+
+Example:
+
+    G0>1:86_3+99/100@1151.0
+    >:87_0+0/4@-6.666667
+    >:87_1+2/4@1.0
+
+    G1>1:86_1+49/100@1176.0
+    >:86_1+2/4@0.0
+    >:86_3+49/100@-975.0
+    >:86_3+1/2@1.0
+    >:86_3+99/100@1151.0
+    >:87_0+0/4@-6.666667
+    >:87_1+2/4@1.0
+
+    G2>1:86_1+49/100@1276.0
+    >:86_1+2/4@0.0
+    >:86_3+49/100@-1075.0
+    >:86_3+1/2@1.0
+    >:86_3+99/100@1151.0
+    >:87_0+0/4@-6.666667
+    >:87_1+2/4@1.0
+
+2. PREFER omitting unnecessary time notation components.
+3. PREFER and align the markers on the same vertical line.
+   Beware though, time notation components MUST NOT be separated in between.
+
+Example:
+
+    1:4_0+0/4@O-3@O3
+         +2/4@O-1
+       _1+0/4@O1
+         +2/4@O-1@O3=+6/4@O3
+       _2+2/4@O-1
+       _3+0/4@O-3@O3
+         +2/4@O1
+     :5_0+0/4@O-1
+
+         ^ Subdivision marker
+       ^ Beat marker
+     ^ Bar marker
+  
+
+4. PREFER writing notes with different timings on different lines except for hold knots/turns.
+5. PREFER writing simultaneous notes on the same line unless both notes are holds
+   (which are forced to separate because the whole hold must be written first).
+
+Example:
+
+    :6_0+0/4@O-3@O3            // Simultaneous taps
+        +2/4@O-1               // Tap at a different timing
+      _1+0/4@O1
+        +2/4@O-3=+6/4@O-3      // Simultaneous holds, so necessary to separate
+        +2/4@O3=+6/4@O3        // But the single whole hold is written on the same line
