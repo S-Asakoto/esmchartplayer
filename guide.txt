@@ -61,7 +61,7 @@ Example:
         >20_0+0/4@1.0
 
 indicates a speed change for Group 0 at Section 1 Bar 12 Beat 0.0 from 1.0x to 0.5x (slows down),
-then a speed change for the same group at Section 1 Bar 16 Beat 0.0 from 0.5x to -0.5x (retrograde motion),
+then a speed change for the same group at Section 1 Bar 16 Beat 0.0 from 0.5x to -1.0x (retrograde motion),
 then a speed change for the same group at Section 1 Bar 20 Beat 0.0 from -0.5x to 1.0x (back to normal).
 
 
