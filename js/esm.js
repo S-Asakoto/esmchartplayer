@@ -352,7 +352,7 @@ function popNote(note) {
 }
 
 function multiplier(x) {
-	return 3 ** (x * hiSpeed * currentScrollSpeed / 5);
+	return Math.min(100, 3 ** (x * hiSpeed * currentScrollSpeed / 5));
 }
 
 function mainLoop(t1) {	
