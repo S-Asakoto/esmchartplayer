@@ -138,8 +138,7 @@ Except for some notes, the format of a note is as follows:
     ([timeNotation])@[noteType][position](G[groupNo])
 
 where [timeNotation] denotes the timing of the note in the format described above,
-[noteType] is one of "O"(tap), "S"(skill), "L"(left flick), "R"(right flick)
-(sorry, up and down flicks are not supported by now, but will be added soon),
+[noteType] is one of "O"(tap), "S"(skill), "L"(left flick), "R"(right flick), "U"(up flick), "D"(down flick),
 [position] is the position of the note (with the center lane labelled 0, then -1, -2, ... to the left,
 and 1, 2, ... to the right. x.5 is supported, indicating a note between two lanes),
 and [groupNo] indicates the group number of the note.

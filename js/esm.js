@@ -1,4 +1,4 @@
-const checkRegex = /((\d+)#(\d+(\.\d+)?):(\d+(\.\d+)?):(\d+(\.\d+)?))|(([>=])?((((\d+)?:(\d+))?_(\d+))?(\+(\d+(\.\d+)?)\/(\d+(\.\d+)?)|(\.\d+))?|(\d+(\.\d+)?))?([!?~]|@([OSLR])?(-?\d+(\.\d+)?)(G(\d+))?))|G(\d+)/gi;
+const checkRegex = /((\d+)#(\d+(\.\d+)?):(\d+(\.\d+)?):(\d+(\.\d+)?))|(([>=])?((((\d+)?:(\d+))?_(\d+))?(\+(\d+(\.\d+)?)\/(\d+(\.\d+)?)|(\.\d+))?|(\d+(\.\d+)?))?([!?~]|@([OSLRUD])?(-?\d+(\.\d+)?)(G(\d+))?))|G(\d+)/gi;
 const levelRegex = /((EASY)|(NORMAL)|(HARD)|(EXPERT)|(SPECIAL))_LEVEL_(3[01]|[12][0-9]|0?[1-9])([+]?)/i;
 const videoRegex = /v=([A-Za-z0-9-_]{11})/;
 const stopRegex = /stop=(\d+(\.\d+)?)/;
@@ -170,6 +170,7 @@ let offset = 0, hiSpeed = 1, numLanes = 0, noteSize = 1;
 let stopTime = 0;
 let fps = Array(50).fill(0), fpsCursor = 0;
 let comboSP1 = 0, comboSP2 = 0, comboSP1Lv = 0, comboSP2Lv = 0, perfectSP = 0;
+let hasEnsembleNote = false;
 
 let scrollChangeEnd = 0;
 let targetScrollSpeed = 1;
@@ -251,7 +252,7 @@ function addScore(note, judgment, fs) {
 
 	if (judgment > 1) {
 		combo++;
-		vol += 1.2 * m * [1, 0.5, 1, 5][note.type] / (totalCount - 9);
+		vol += 1.2 * m * [1, 0.5, 1, 5][note.type] / (totalCount - hasEnsembleNote * 9);
 		if (note.type == 3)
 			startEnsembleSuccess();
 		else if (note.addEnsemble)
@@ -342,11 +343,11 @@ function popNote(note) {
 	else if (note.isSkill)
 		noteIndex = 0;
 	else if (note.type == 2)
-		noteIndex = (5.5 + note.flickDir / 2) + 5 * 0;
+		noteIndex = (5.5 + note.isUDFlick * 2 + note.flickDir / 2) + 7 * 0;
 	else if (note.type == 1)
-		noteIndex = 4 + 5 * 0;
+		noteIndex = 4 + 7 * 0;
 	else
-		noteIndex = (2 + note.isHoldHead) + 5 * 0;
+		noteIndex = (2 + note.isHoldHead) + 7 * 0;
 
 	noteContainer.prepend(note.noteElement = noteTemplates[noteIndex].cloneNode(true));
 }
@@ -429,7 +430,7 @@ function mainLoop(t1) {
 					}
 				}
 				else {
-					if (note.type == 2 && isOnLaneFlick && note.flickDir == touch.flickX) {
+					if (note.type == 2 && isOnLaneFlick && note.flickDir == (note.isUDFlick ? touch.flickY : touch.flickX)) {
 						if (hasFlickOrTap)
 							continue;
 
@@ -681,6 +682,7 @@ function readChart() {
 	totalCount = 0;
 	totalSkills = 0;
 	totalEnsemble = 0;
+	hasEnsembleNote = false;
 	let section = 1, bar = 0, beat = 0, time = 0, follow = [];
 
 	let tracking = 0;
@@ -740,11 +742,12 @@ function readChart() {
 				let note = {
 					time, 
 					headTime: time,
-					type: match[25][0] == "!" ? 3 : match[26] ? "OSLR".indexOf(match[26]) > 1 ? 2 : +isFollow : -1,
+					type: match[25][0] == "!" ? 3 : match[26] ? "OSLRUD".indexOf(match[26]) > 1 ? 2 : +isFollow : -1,
 					pos: match[25][0] == "!" ? 0 : +match[27],
 					isSkill: match[26] == "S",
 					isHoldHead: false,
-					flickDir: ("L.R".indexOf(match[26]) - 1) % 2,
+					flickDir: "LU".indexOf(match[26]) >= 0 ? -1 : "DR".indexOf(match[26]) >= 0 ? 1 : 0,
+					isUDFlick: +("UD".indexOf(match[26]) >= 0),
 					follows: null,
 					followPath: [],
 					group,
@@ -754,6 +757,7 @@ function readChart() {
 					simulHint: null                
 				};
 				if (!tracks[group]) tracks[group] = [];
+				if (match[25][0] == "!") hasEnsembleNote = true;
 
 				if (isFollow) {
 					note.follows = notes[totalCombo - 1];
