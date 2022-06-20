@@ -123,6 +123,8 @@ $("#touch_area").on("touchstart", function(e) {
 			newLane: (Math.atan2((window.innerHeight / 2 - 40 * ruler) - touch.clientY, touch.clientX - window.innerWidth / 2) * 180 / Math.PI + 90) * (numLanes - 1) / 120,
 			flickX: 0,
 			flickY: 0,
+			flickXSize: 0,
+			flickYSize: 0,
 			phase: 0
 		};
 	}
@@ -143,8 +145,10 @@ $("#touch_area").on("touchmove touchend touchcancel", function(e) {
 		    _oldFlickY = touches[touch.identifier].flickY;
 		touches[touch.identifier].oldLane = touches[touch.identifier].newLane;
 		touches[touch.identifier].newLane = (Math.atan2((window.innerHeight / 2 - 40 * ruler) - touch.clientY, touch.clientX - window.innerWidth / 2) * 180 / Math.PI + 90) * (numLanes - 1) / 120,
-		touches[touch.identifier].flickX = signWithThreshold(touch.clientX - touches[touch.identifier]._refX, 2 * ruler), 
+		touches[touch.identifier].flickX = signWithThreshold(touch.clientX - touches[touch.identifier]._refX, 2 * ruler); 
 		touches[touch.identifier].flickY = signWithThreshold(touch.clientY - touches[touch.identifier]._refY, 2 * ruler);
+		touches[touch.identifier].flickXSize = Math.abs(touch.clientX - touches[touch.identifier]._refX);
+		touches[touch.identifier].flickYSize = Math.abs(touch.clientY - touches[touch.identifier]._refY);
 		touches[touch.identifier].x = touch.clientX;
 		touches[touch.identifier].y = touch.clientY;
 		if (_oldFlickX != touches[touch.identifier].flickX && _oldFlickX != 0) touches[touch.identifier]._refX = touches[touch.identifier].x;
@@ -409,8 +413,8 @@ function mainLoop(t1) {
 					continue;
 
 				let timeDiff = nowTime - note.time;
-				let isOnLaneNormal = Math.abs(note.pos - touch.newLane) < 0.9, 
-					isOnLaneFlick = Math.abs(note.pos - touch.newLane) < 0.6;
+				let isOnLaneNormal = Math.abs(note.pos - touch.newLane) < 0.99, 
+					isOnLaneFlick = Math.abs(note.pos - touch.newLane) < 0.99;
 				if (touch.phase == 0 || touch.phase == 3) {
 					if (isOnLaneNormal) {
 						if (note.type == 0 || note.type == 3) {
@@ -434,7 +438,7 @@ function mainLoop(t1) {
 						if (hasFlickOrTap)
 							continue;
 
-						if (note.follows == null && timeDiff < -0.1) {
+						if (note.follows == null && timeDiff < -0.1 && (note.isUDFlick ? touch.flickYSize : touch.flickXSize) > 10 * ruler) {
 							if (timeDiff >= -0.17)
 								addScore(note, 3, "FAST");
 							else if (timeDiff >= -0.24)
