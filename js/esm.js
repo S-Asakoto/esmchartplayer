@@ -439,12 +439,22 @@ function mainLoop(t1) {
 							continue;
 
 						if (note.follows == null && timeDiff < -0.1 && (note.isUDFlick ? touch.flickYSize : touch.flickXSize) > 10 * ruler) {
+							if (timeDiff >= -0.34) {
+								touches[touch.identifier]._refX = touches[touch.identifier].x;
+								touches[touch.identifier]._refY = touches[touch.identifier].y;
+							}
+
 							if (timeDiff >= -0.17)
 								addScore(note, 3, "FAST");
 							else if (timeDiff >= -0.24)
 								addScore(note, 2, "FAST");
 							else if (timeDiff >= -0.34)
 								addScore(note, 1, "FAST");
+						}
+
+						if (timeDiff >= -0.1) {
+							touches[touch.identifier]._refX = touches[touch.identifier].x;
+							touches[touch.identifier]._refY = touches[touch.identifier].y;
 						}
 						
 						if (timeDiff >= 0.155)
@@ -468,7 +478,8 @@ function mainLoop(t1) {
 						else if (touch.phase == 1) {
 							if (timeDiff >= 0.12)
 								addScore(note, 1, "SLOW");
-							else if (timeDiff >= 0.085)
+							else 
+							if (timeDiff >= 0.085)
 								addScore(note, 2, "SLOW");
 							else if (timeDiff >= 0.05)
 								addScore(note, 3, "SLOW");
