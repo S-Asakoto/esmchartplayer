@@ -861,8 +861,15 @@ function readChart() {
 
 	console.log('tracks', tracks, '; notes', notes);
 
+	let lastTimeslot = -9999, nowTimeslot = -9999;
 	notes.sort((a, b) => a.time - b.time || a.group - b.group).map(function (_, i) {
-		if (i > 0 && notes[i].time == notes[i - 1].time && notes[i].type != 1 && notes[i - 1].type != 1) {
+		if (nowTimeslot != notes[i].time) {
+			lastTimeslot = nowTimeslot;
+			nowTimeslot = notes[i].time;
+		}
+		if (notes[i].type == 2) notes[i].flickClear = lastTimeslot;
+
+		if (i > 0 && notes[i].time == notes[i - 1].time && notes[i].type != 1 && notes[i - 1].type != 1 && notes[i].group == notes[i - 1].group) {
 			if (!notes[i - 1].simul)
 				notes[i - 1].simul = [notes[i - 1], notes[i]];
 			else 
