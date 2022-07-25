@@ -111,8 +111,8 @@ body {
 }
 
 .mark.effect {
-	width: calc(22.5 * var(--ruler));
-	height: calc(22.5 * var(--ruler));
+	width: calc(30 * var(--note-size) * var(--ruler));
+	height: calc(30 * var(--note-size) * var(--ruler));
 	opacity: 0;
 	animation: hide 0.5s ease 1;
 }
