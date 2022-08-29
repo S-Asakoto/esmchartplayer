@@ -81,6 +81,7 @@ function showScore(score, difficulty) {
 		score /= 1000;
 		scoreGaugeRect.attr("width", score * 9.75);
 		gaugeFill.attr("fill", "url(#g4)");
+		gaugeS.show();
 		gaugeA.css({left: `calc(${0.8 * 97.3 - 1.5} * var(--ruler))`}).show();
 		gaugeB.css({left: `calc(${0.5 * 97.3 - 1.5} * var(--ruler))`}).show();
 		gaugeC.css({left: `calc(${0.3 * 97.3 - 1.5} * var(--ruler))`}).show();
