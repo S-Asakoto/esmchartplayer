@@ -239,7 +239,7 @@ function addScore(note, judgment, fs) {
 		m = 1;
 		a = 1;
 	}
-	if (judgment == 4) {
+	else if (judgment == 4) {
 		c = "perfect";
 		m = 1;
 		a = 9;
