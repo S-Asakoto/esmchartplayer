@@ -303,8 +303,8 @@ function addScore(note, judgment, fs) {
 
 	showScore(
 		isChallenge && !playMode 
-			? Math.floor(10000 * (aaScore += a * [1, 0.5, 1, ensemble >= 1 ? 10 : 1][note.type]) / totalCount), 
-			: score += bankerRound(bankerRound(stats * 2 / totalCount) * mult * [1, 0.5, 1, ensemble >= 1 ? 10 : 1][note.type] * m)
+			? Math.floor(10000 * (aaScore += a * [1, 0.5, 1, ensemble >= 1 ? 10 : 1][note.type]) / totalCount)
+			: score += bankerRound(bankerRound(stats * 2 / totalCount) * mult * [1, 0.5, 1, ensemble >= 1 ? 10 : 1][note.type] * m),
 		+chartDiffSelect.val()
 	);
 	showVoltage(vol);
