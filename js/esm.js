@@ -57,7 +57,7 @@ function popTapEffect(position, count, effect) {
 	}, 500);
 }
 
-const gradA = $("#grad_a"), gradB = $("#grad_b"), gradC = $("#grad_c"),
+const gradA = $("#grad_a"), gradB = $("#grad_b"), gradC = $("#grad_c"), gradS = $("#grad_s"),
  	  gaugeA = $(".gauge-a"), gaugeB = $(".gauge-b"), gaugeC = $(".gauge-c"), gaugeS = $(".gauge-s"), gauge2 = $(".gauge-s2, .gauge-sp"),
 	  grads = $(".grads"), gaugeFill = $("#gauge_fill"), scoreGaugeRect = $("rect", "#gauge2"),
 	  scoreNum = $("#score_num"), scoreNumBase = $(".base", scoreNum), scoreNumShow = $(".show", scoreNum), scoreUp = $("#score_up"),
@@ -75,27 +75,43 @@ function showScore(score, difficulty) {
 		[0, 72000, 240000, 432000, 720000, 2160000],
 		[0, 72000, 240000, 432000, 720000, 2160000]
 	][difficulty];
-	
+
 	$(".gauge-letters").hide();
-	if (score < grades[4]) {
-		scoreGaugeRect.attr("width", score / grades[4] * 975);
+	if (isChallenge) {
+		score /= 1000;
+		scoreGaugeRect.attr("width", score * 9.75);
 		gaugeFill.attr("fill", "url(#g4)");
-		gaugeS.show();
-		gaugeA.css({left: `calc(${grades[3] / grades[4] * 97.3 - 1.5} * var(--ruler))`}).show();
-		gaugeB.css({left: `calc(${grades[2] / grades[4] * 97.3 - 1.5} * var(--ruler))`}).show();
-		gaugeC.css({left: `calc(${grades[1] / grades[4] * 97.3 - 1.5} * var(--ruler))`}).show();
+		gaugeA.css({left: `calc(${0.8 * 97.3 - 1.5} * var(--ruler))`}).show();
+		gaugeB.css({left: `calc(${0.5 * 97.3 - 1.5} * var(--ruler))`}).show();
+		gaugeC.css({left: `calc(${0.3 * 97.3 - 1.5} * var(--ruler))`}).show();
 		grads.show();
-		gradA.attr("d", `M${grades[3] / grades[4] * 973 + 10},10 l0,40 Z`);
-		gradB.attr("d", `M${grades[2] / grades[4] * 973 + 10},10 l0,40 Z`);
-		gradC.attr("d", `M${grades[1] / grades[4] * 973 + 10},10 l0,40 Z`);
+		gradS.attr("d", `M${0.975 * 973 + 10},10 l0,40 Z`);
+		gradA.attr("d", `M${0.8 * 973 + 10},10 l0,40 Z`);
+		gradB.attr("d", `M${0.5 * 973 + 10},10 l0,40 Z`);
+		gradC.attr("d", `M${0.3 * 973 + 10},10 l0,40 Z`);
+		scoreNumBase.text(scoreNumShow.html((score.toFixed(3) + "%").padStart(8, 0).replace(/^0+/, `<span class="leading-zeros">$&</span>`)).text());
 	}
 	else {
-		scoreGaugeRect.attr("width", Math.min(1, (score - grades[4]) / (grades[5] - grades[4])) * 975);
-		gaugeFill.attr("fill", "url(#g3)");
-		gauge2.show();
-		grads.hide();
+		if (score < grades[4]) {
+			scoreGaugeRect.attr("width", score / grades[4] * 975);
+			gaugeFill.attr("fill", "url(#g4)");
+			gaugeS.show();
+			gaugeA.css({left: `calc(${grades[3] / grades[4] * 97.3 - 1.5} * var(--ruler))`}).show();
+			gaugeB.css({left: `calc(${grades[2] / grades[4] * 97.3 - 1.5} * var(--ruler))`}).show();
+			gaugeC.css({left: `calc(${grades[1] / grades[4] * 97.3 - 1.5} * var(--ruler))`}).show();
+			grads.show();
+			gradA.attr("d", `M${grades[3] / grades[4] * 973 + 10},10 l0,40 Z`);
+			gradB.attr("d", `M${grades[2] / grades[4] * 973 + 10},10 l0,40 Z`);
+			gradC.attr("d", `M${grades[1] / grades[4] * 973 + 10},10 l0,40 Z`);
+		}
+		else {
+			scoreGaugeRect.attr("width", Math.min(1, (score - grades[4]) / (grades[5] - grades[4])) * 975);
+			gaugeFill.attr("fill", "url(#g3)");
+			gauge2.show();
+			grads.hide();
+		}
+		scoreNumBase.text(scoreNumShow.html(("" + score).padStart(8, 0).replace(/^0+/, `<span class="leading-zeros">$&</span>`)).text());
 	}
-	scoreNumBase.text(scoreNumShow.html(("" + score).padStart(8, 0).replace(/^0+/, `<span class="leading-zeros">$&</span>`)).text());
 }	
 
 function showVoltage(voltage) {
