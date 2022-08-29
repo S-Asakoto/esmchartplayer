@@ -175,6 +175,7 @@ let stopTime = 0;
 let fps = Array(50).fill(0), fpsCursor = 0;
 let comboSP1 = 0, comboSP2 = 0, comboSP1Lv = 0, comboSP2Lv = 0, perfectSP = 0;
 let hasEnsembleNote = false;
+let isChallenge = false, aaScore = 0;
 
 let scrollChangeEnd = 0;
 let targetScrollSpeed = 1;
@@ -230,21 +231,29 @@ function addScore(note, judgment, fs) {
 	}
 
 	let j = Math.random();
-	let c = "", m = 0;
+	let c = "", m = 0, a = 0;
 	let judgmentFS = "";
 
+	if (judgment == 5) {
+		c = "amazing";
+		m = 1;
+		a = 1;
+	}
 	if (judgment == 4) {
 		c = "perfect";
 		m = 1;
+		a = 9;
 	}
 	else if (judgment == 3) {
 		c = "great";
 		m = 0.8;
+		a = 5;
 		judgmentFS = fs;
 	}
 	else if (judgment == 2) {
 		c = "good";
 		m = 0.5;
+		a = 1;
 		judgmentFS = fs;
 	}
 	else {
@@ -291,8 +300,13 @@ function addScore(note, judgment, fs) {
 		else if (i[2] > 0 && t - i[2] < i[0])
 			mult += i[1] / 100;
 	}
-		
-	showScore(score += bankerRound(bankerRound(stats * 2 / totalCount) * mult * [1, 0.5, 1, ensemble >= 1 ? 10 : 1][note.type] * m), +chartDiffSelect.val());
+
+	showScore(
+		isChallenge && !playMode 
+			? score += bankerRound(bankerRound(stats * 2 / totalCount) * mult * [1, 0.5, 1, ensemble >= 1 ? 10 : 1][note.type] * m)
+			: Math.floor(10000 * (aaScore += a * [1, 0.5, 1, ensemble >= 1 ? 10 : 1][note.type]) / totalCount), 
+		+chartDiffSelect.val()
+	);
 	showVoltage(vol);
 	showEnsembleGauge(ensemble);
 
@@ -300,7 +314,7 @@ function addScore(note, judgment, fs) {
 	$("#combo").removeClass("beat")[["show", "hide"][+!combo]]();
 	$("#combo").addClass("beat");
 
-	$("#judgment").removeClass("perfect great good bad miss beat2").show();
+	$("#judgment").removeClass("amazing perfect great good bad miss beat2").show();
 	$("#judgment").addClass("beat2 " + c).attr("data-judge", w);
 	if (judgmentSupport) {
 		if (judgmentSPTimeout) clearTimeout(judgmentSPTimeout);
@@ -893,6 +907,8 @@ $("#close_menu").on("click", function() {
 		showScore(score = 0, +chartDiffSelect.val());
 		showVoltage(vol = 0.2);
 		showEnsembleGauge(ensemble = -Infinity);
+		isChallenge = +chartDiffSelect.val() == 4;
+ 		aaScore = 0;
 		combo = 0;
 		notePassed = 0;
 		skills = [];
