@@ -920,11 +920,11 @@ function readChart() {
 
 $("#close_menu").on("click", function() {
 	try {
+		isChallenge = +chartDiffSelect.val() == 4;
+ 		aaScore = 0;
 		showScore(score = 0, +chartDiffSelect.val());
 		showVoltage(vol = 0.2);
 		showEnsembleGauge(ensemble = -Infinity);
-		isChallenge = +chartDiffSelect.val() == 4;
- 		aaScore = 0;
 		combo = 0;
 		notePassed = 0;
 		skills = [];
