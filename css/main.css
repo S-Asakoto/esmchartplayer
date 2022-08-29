@@ -72,6 +72,7 @@ body {
 	content: attr(data-judge);
 }
 
+.amazing::after {background-color: #fcc;}
 .perfect::after {background-image: linear-gradient(135deg, #f06 20%, #f0f, #00f, #06f, #0f6, #6f0 80%);}
 .great::after {background-color: #f33;}
 .good::after {background-color: #f90;}
