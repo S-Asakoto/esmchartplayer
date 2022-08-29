@@ -608,7 +608,7 @@ function mainLoop(t1) {
 			if (!playMode && note.headTime <= nowTime && note.time > nowTime)
 				playHoldSE = true;
 			if (!playMode && note.time <= nowTime) {
-				addScore(note, 4);
+				addScore(note, isChallenge + 4);
 				if (note.type == 3)
 					playSPPSE = true;
 				else if (note.type == 2)
