@@ -1,5 +1,6 @@
 const checkRegex = /((\d+)#(\d+(\.\d+)?):(\d+(\.\d+)?):(\d+(\.\d+)?))|(([>=])?((((\d+)?:(\d+))?_(\d+))?(\+(\d+(\.\d+)?)\/(\d+(\.\d+)?)|(\.\d+))?|(\d+(\.\d+)?))?([!?~]|@([OSLRUD])?(-?\d+(\.\d+)?)(G(\d+))?))|G(\d+)/gi;
 const levelRegex = /((EASY)|(NORMAL)|(HARD)|(EXPERT)|(SPECIAL))_LEVEL_(3[01]|[12][0-9]|0?[1-9])([+]?)/i;
+const laneRegex = /lane=(5|7|9|11)/;
 const videoRegex = /v=([A-Za-z0-9-_]{11})/;
 const stopRegex = /stop=(\d+(\.\d+)?)/;
 
@@ -717,7 +718,7 @@ function readChart() {
 	touches = {};
 	flickDir = {};
 
-	let file = $("#chart").val().replace(levelRegex, "").replace(videoRegex, "").replace(stopRegex, (_, a) => (stopTime = +a) || "");
+	let file = $("#chart").val().replace(levelRegex, "").replace(videoRegex, "").replace(stopRegex, (_, a) => (stopTime = +a) || "").replace(laneRegex, "");
 	bpmTimings = {};
 	tracks = {"0": []};
 	notes = [];
@@ -735,6 +736,7 @@ function readChart() {
 
 	checkRegex.exec("");
 	levelRegex.exec("");
+	laneRegex.exec("");
 	videoRegex.exec("");
 	stopRegex.exec("");
 
@@ -1117,6 +1119,10 @@ $("#chart").on("change", function() {
 				$("#setting_" + $("#setting_src_type").val()).trigger("submit");
 		}
 	}
+
+	let laneDefinition = laneRegex.exec(file);
+	if (laneDefinition)
+		loadJudgmentLine(numLanes = laneDefinition[1]);
 });
 
 $("#setting_src_type").on("change", function() {
